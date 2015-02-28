@@ -8,5 +8,5 @@ sys.setdefaultencoding('utf-8')
 import handler
 
 urls = [
-        (r'/',handler.index.IndexHandler),
+        (r'/weixin',handler.index.WechatHandler),
         ]

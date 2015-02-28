@@ -11,7 +11,7 @@ import config
 import hashlib
 import logging
 
-class IndexHandler(tornado.web.RequestHandler):
+class WechatHandler(tornado.web.RequestHandler):
     def get(self):
         echostr = self.get_argument('echostr','')
         if self.checkSignature() and echostr:
