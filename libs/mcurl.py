@@ -6,7 +6,7 @@ class CurlHelper(object):
     """CurlHelper"""
     def __init__(self):
         self.curl = pycurl.Curl()
-        self.curl.setopt(pycurl.VERBOSE, 1)
+        #self.curl.setopt(pycurl.VERBOSE, 1)
         self.curl.setopt(pycurl.MAXREDIRS, 5)
         self.curl.setopt(pycurl.CONNECTTIMEOUT, 100)
         self.curl.setopt(pycurl.TIMEOUT, 1000)
