@@ -16,12 +16,12 @@ class EventMsg(object):
 
     def handle(self):
          event_action = {
-             "subscribe" : Subscribe,
-             "unsubscribe": UnSubscribe,
-             "SCAN" : Scan,
-             "CLICK": Click,
-             "VIEW": View,
-             "LOCATION": Location,
+             "subscribe" : self.Subscribe,
+             "unsubscribe": self.UnSubscribe,
+             "SCAN" : self.Scan,
+             "CLICK": self.Click,
+             "VIEW": self.View,
+             "LOCATION": self.Location,
          }
 
          resp_msg,resp_msg_type = event_action.get(self.event)()
