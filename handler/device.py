@@ -28,7 +28,7 @@ class QrcodeHandler(tornado.web.RequestHandler):
             else:
                 self.write("Device does not exist !!!")
         elif q == 'generate' and user == 'hanliang' :
-            device_id = self.redis.incr("device:count")
+            device_id = self.redis.incr("device:id")
             self.redis.sadd("device:list",device_id)
             access_token = self.getAccessToken()
             post_data = {"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id": device_id}}}

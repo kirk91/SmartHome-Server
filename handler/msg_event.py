@@ -31,25 +31,25 @@ class EventMsg(object):
             return config.TextTpl % (self.from_user,self.to_user,curr_timestamp,resp_msg)
 
     def Subscribe(self):
-        if self.redis.sismember("weixin:list", self.from_user):
-            user_id = int(self.redis.hget("weixin:%s"%self.from_user, 'uid'))
+        if self.redis.sismember("wx_user:list", self.from_user):
+            user_id = int(self.redis.hget("wx_user:%s"%self.from_user, 'uid'))
             if self.msg.has_key('EventKey') and self.msg.get('EventKey'):
                 event_key = self.msg.get('EventKey')[8:]
                 # 暂时一个用户只能绑定一个树莓派
-                self.redis.hset("users:%d"%user_id, "device_id", event_key)
+                self.redis.hset("user:%d"%user_id, "device_id", event_key)
                 return ('恭喜您已经成功绑定家居客户端，可以试试下方菜单','text')
 
         else:
-            user_id = self.redis.incr("users:id")
-            self.redis.sadd("users:list",user_id)
-            self.redis.sadd("weixin:list",self.from_user)
-            self.redis.hset("weixin:%s"%self.from_user, 'uid',user_id)
-            self.redis.hset("users:%d"%user_id, "openid", self.from_user)
+            user_id = self.redis.incr("user:id")
+            self.redis.sadd("user:list",user_id)
+            self.redis.sadd("wx_user:list",self.from_user)
+            self.redis.hset("wx_user:%s"%self.from_user, 'uid',user_id)
+            self.redis.hset("user:%d"%user_id, "openid", self.from_user)
 
             if self.msg.has_key('EventKey') and self.msg.get('EventKey'):
                 event_key = self.msg.get('EventKey')[8:]
                 # 暂时一个用户只能绑定一个树莓派
-                self.redis.hset("users:%d"%user_id, "device_id", event_key)
+                self.redis.hset("user:%d"%user_id, "device_id", event_key)
                 return ('感谢关注家居小助手！您已经成功绑定家居客户端，可以试试下方菜单','text')
 
             return ('感谢关注家居小助手！为了提供更方便的服务，您需要绑定客户端','text')
@@ -59,8 +59,8 @@ class EventMsg(object):
 
     def Scan(self):
         event_key = self.msg.get('EventKey')
-        user_id = int(self.redis.hget("weixin:%s"%self.from_user, 'uid'))
-        self.redis.hset("users:%d"%user_id, "device_id", event_key)
+        user_id = int(self.redis.hget("wx_user:%s"%self.from_user, 'uid'))
+        self.redis.hset("user:%d"%user_id, "device_id", event_key)
 
         return ('恭喜你已经成功绑定家居客户端','text')
 
