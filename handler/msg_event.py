@@ -33,6 +33,7 @@ class EventMsg(object):
     def Subscribe(self):
         if self.redis.sismember("weixin:list", self.from_user):
             user_id = self.redis.hget("weixin:%s"%self.from_user, 'uid')
+            print user_id,type(user_id)
             if self.msg.has_key('EventKey') and self.msg.get('EventKey'):
                 event_key = self.msg.get('EventKey')[8:]
                 # 暂时一个用户只能绑定一个树莓派
