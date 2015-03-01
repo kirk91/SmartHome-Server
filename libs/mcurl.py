@@ -6,7 +6,7 @@ class CurlHelper(object):
     """CurlHelper"""
     def __init__(self):
         self.curl = pycurl.Curl()
-        self.curl.setopt(pycurl.VERBOSE, 1)
+        #self.curl.setopt(pycurl.VERBOSE, 1)
         self.curl.setopt(pycurl.MAXREDIRS, 5)
         self.curl.setopt(pycurl.CONNECTTIMEOUT, 100)
         self.curl.setopt(pycurl.TIMEOUT, 1000)
@@ -26,9 +26,9 @@ class CurlHelper(object):
     def post(self,url,params=None,data=""):
         if params:
             url = url % params
-        self.curl.setopt(pycurl.POSTFIELDS, data)
 	print url 
         self.curl.setopt(pycurl.URL, url)
+        self.curl.setopt(pycurl.POSTFIELDS, data)
         b = StringIO.StringIO()
         self.curl.setopt(pycurl.WRITEFUNCTION, b.write)
         self.curl.perform()
