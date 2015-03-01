@@ -39,7 +39,7 @@ class WechatHandler(tornado.web.RequestHandler):
             msg_handler = msg_action.get(msg_type)(msg)
             resp_msg = msg_handler.handle()
 
-            self.write(self.resp_msg)
+            self.write(resp_msg)
         else:
             self.write('hello,weixin')
 
