@@ -10,8 +10,8 @@ class EventMsg(object):
         self.redis = redis.Redis(host = config.redis_host, port = config.redis_port, db = config.redis_db)
         self.msg = msg
         self.event = msg.get("Event")
-        self.to_user = msg.get("ToUsername")
-        self.from_user = msg.get("FromUsername")
+        self.to_user = msg.get("ToUserName")
+        self.from_user = msg.get("FromUserName")
 
 
     def handle(self):
