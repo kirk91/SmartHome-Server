@@ -6,6 +6,7 @@ import tornado.httpserver
 import tornado.options
 
 import sys
+sys.path.append("libs")
 
 from application import app
 import config
