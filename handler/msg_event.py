@@ -61,6 +61,7 @@ class EventMsg(object):
     def Scan(self):
         event_key = self.msg.get('EventKey')
         user_id = self.redis.hget("weixin:%s"%self.from_user, 'uid')
+        print user_id,type(user_id)
         self.redis.hset("users:%d"%user_id, "device_id", event_key)
 
         return ('恭喜你已经成功绑定家居客户端','text')
