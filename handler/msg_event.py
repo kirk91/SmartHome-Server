@@ -31,18 +31,22 @@ class EventMsg(object):
             return config.TextTpl % (self.from_user,self.to_user,curr_timestamp,resp_msg)
 
     def Subscribe(self):
-        user_id = self.redis.incr("users:id")
-        self.redis.sadd("users:list",user_id)
-        self.redis.hset("weixin:%s"%self.from_user, 'uid',user_id)
-        self.redis.hset("users:%d"%user_id, "openid", self.from_user)
+        if self.redis.sismember("weixin:list", self.from_user):
+            pass
+        else:
+            user_id = self.redis.incr("users:id")
+            self.redis.sadd("users:list",user_id)
+            self.redis.sadd("weixin:list",self.from_user)
+            self.redis.hset("weixin:%s"%self.from_user, 'uid',user_id)
+            self.redis.hset("users:%d"%user_id, "openid", self.from_user)
 
-        if self.msg.has_key('EventKey') and self.msg.get('EventKey'):
-            event_key = self.msg.get('EventKey')[8:]
-            # 暂时一个用户只能绑定一个树莓派
-            self.redis.hset("users:%d"%user_id, "device_id", event_key)
-            return ('感谢关注家居小助手！您已经成功绑定家居客户端，可以试试下方菜单','text')
+            if self.msg.has_key('EventKey') and self.msg.get('EventKey'):
+                event_key = self.msg.get('EventKey')[8:]
+                # 暂时一个用户只能绑定一个树莓派
+                self.redis.hset("users:%d"%user_id, "device_id", event_key)
+                return ('感谢关注家居小助手！您已经成功绑定家居客户端，可以试试下方菜单','text')
 
-        return ('感谢关注家居小助手！为了提供更方便的服务，您需要绑定客户端','text')
+            return ('感谢关注家居小助手！为了提供更方便的服务，您需要绑定客户端','text')
 
     def  UnSubscribe(self):
         pass
