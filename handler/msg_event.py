@@ -25,7 +25,7 @@ class EventMsg(object):
          }
 
          resp_msg,resp_msg_type = event_action.get(self.event)()
-         curr_timestamp = int(time.tim())
+         curr_timestamp = int(time.time())
 
          if resp_msg_type == 'text':
             return config.TextTpl % (self.from_user,self.to_user,curr_timestamp,resp_msg)
