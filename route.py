@@ -10,4 +10,5 @@ import handler
 urls = [
         (r'/',handler.index.IndexHandler),
         (r'/weixin',handler.weixin.WechatHandler),
+        (r'/device',handler.device.QrcodeHandler),
         ]
