@@ -26,8 +26,8 @@ class CurlHelper(object):
     def post(self,url,params=None,data=""):
         if params:
             url = url % params
-        self.curl.setopt(pycurl.POSTFIELDS, data)
         self.curl.setopt(pycurl.URL, url)
+        self.curl.setopt(pycurl.POSTFIELDS, data)
         b = StringIO.StringIO()
         self.curl.setopt(pycurl.WRITEFUNCTION, b.write)
         self.curl.perform()
