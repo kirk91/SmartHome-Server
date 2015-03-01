@@ -31,7 +31,7 @@ class WechatHandler(tornado.web.RequestHandler):
             logging.info(self.request.body)
 
             msg = self.parse_request_xml(self.request.body)
-            msg_type = msg_type.get('MsgType')
+            msg_type = msg.get('MsgType')
             msg_action = {
                 "event" : msg_event.EventMsg,
             }
