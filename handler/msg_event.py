@@ -36,7 +36,7 @@ class EventMsg(object):
         self.redis.hset("weixin:%s"%self.from_user, 'uid',user_id)
         self.redis.hset("users:%d"%user_id, "openid", self.from_user)
 
-        if self.msg.has_key('EventKey'):
+        if self.msg.has_key('EventKey') and self.msg.get('EventKey'):
             event_key = self.msg.get('EventKey')[8:]
             # 暂时一个用户只能绑定一个树莓派
             self.redis.hset("users:%d"%user_id, "device_id", event_key)
