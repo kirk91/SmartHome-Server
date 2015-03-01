@@ -10,8 +10,8 @@ class EventMsg(object):
         self.redis = redis.Redis(host = config.redis_host, port = config.redis_port, db = config.redis_db)
         self.msg = msg
         self.event = msg.get("Event")
-        self.to = msg.get("ToUsername")
-        self.from = msg.get("FromUsername")
+        self.to_user = msg.get("ToUsername")
+        self.from_user = msg.get("FromUsername")
 
 
     def handle(self):
@@ -28,13 +28,13 @@ class EventMsg(object):
          curr_timestamp = int(time.tim())
 
          if resp_msg_type == 'text':
-            return config.TextTpl % (self.from,self.to,curr_timestamp,resp_msg)
+            return config.TextTpl % (self.from_user,self.to_user,curr_timestamp,resp_msg)
 
     def Subscribe(self):
         user_id = self.redis.incr("users:id")
         self.redis.sadd("users:list",user_id)
-        self.redis.hset("weixin:%s"%self.from, 'uid',user_id)
-        self.redis.hset("users:%d"user_id, "openid", self.from)
+        self.redis.hset("weixin:%s"%self.from_user, 'uid',user_id)
+        self.redis.hset("users:%d"%user_id, "openid", self.from_user)
 
         if self.msg.has_key('EventKey'):
             event_key = self.msg.get('EventKey')[8:]
@@ -49,7 +49,7 @@ class EventMsg(object):
 
     def Scan(self):
         event_key = self.msg.get('EventKey')
-        user_id = self.redis.hget("weixin:%s"%self.from, 'uid')
+        user_id = self.redis.hget("weixin:%s"%self.from_user, 'uid')
         self.redis.hset("users:%d"%user_id, "device_id", event_key)
 
         return ('恭喜你已经成功绑定家居客户端','text')

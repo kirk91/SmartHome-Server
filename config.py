@@ -9,7 +9,7 @@ redis_port = 6379
 redis_db = 0
 
 # response_msg tpl
- TextTpl = '''<xml>
+TextTpl = '''<xml>
                 <ToUserName><![CDATA[%s]]></ToUserName>
                 <FromUserName><![CDATA[%s]]></FromUserName>
                 <CreateTime>%d</CreateTime>

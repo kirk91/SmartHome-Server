@@ -15,7 +15,7 @@ try:
     from xml.etree import cElementTree as ET
 except:
     from xml.etree import ElementInclude as ET
-import msg_event.py
+import msg_event
 
 class WechatHandler(tornado.web.RequestHandler):
     def get(self):
