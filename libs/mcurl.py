@@ -1,10 +1,8 @@
+# coding:utf-8
+
 import pycurl
 import StringIO
 import urllib
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 
 class CurlHelper(object):
     """CurlHelper"""
