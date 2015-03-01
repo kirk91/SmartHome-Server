@@ -32,11 +32,13 @@ class EventMsg(object):
 
     def Subscribe(self):
         if self.redis.sismember("weixin:list", self.from_user):
+            user_id = self.redis.hget("weixin:%s"%self.from_user, 'uid')
             if self.msg.has_key('EventKey') and self.msg.get('EventKey'):
                 event_key = self.msg.get('EventKey')[8:]
                 # 暂时一个用户只能绑定一个树莓派
                 self.redis.hset("users:%d"%user_id, "device_id", event_key)
-                return ('感谢关注家居小助手！您已经成功绑定家居客户端，可以试试下方菜单','text')
+                return ('恭喜您已经成功绑定家居客户端，可以试试下方菜单','text')
+
         else:
             user_id = self.redis.incr("users:id")
             self.redis.sadd("users:list",user_id)
