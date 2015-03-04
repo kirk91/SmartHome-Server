@@ -87,7 +87,7 @@ class EventMsg(object):
                     return (res_dict['info'],'text')
             else:
                 # other key
-                return ('%s暂时还没有定义, 正在开发中...','text'%event_key)
+                return ('%s暂时还没有定义, 正在开发中...'%event_key,'text')
         else:
             return ('您还为绑定家居客户端，请先绑定','text')
 
