@@ -83,7 +83,7 @@ class EventMsg(object):
                 status = res_dict['status']
                 if status == -1:
                     return ('客户端未接入互联网或者已断线','text')
-                elif status = 0:
+                elif status == 0:
                     return (res_dict['info'],'text')
             else:
                 # other key
