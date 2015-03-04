@@ -4,6 +4,8 @@
 import redis
 import config
 import time
+import rpyc
+import json
 
 class EventMsg(object):
     def __init__(self,msg):
@@ -55,9 +57,11 @@ class EventMsg(object):
             return ('感谢关注家居小助手！为了提供更方便的服务，您需要绑定客户端','text')
 
     def  UnSubscribe(self):
-        pass
+        # 先不删除用户
+        return ('成功取消关注','text')
 
     def Scan(self):
+        # 这里缺少用户绑定新的树莓派客户端的检测
         event_key = self.msg.get('EventKey')
         user_id = int(self.redis.hget("wx_user:%s"%self.from_user, 'uid'))
         self.redis.hset("user:%d"%user_id, "device_id", event_key)
@@ -65,7 +69,27 @@ class EventMsg(object):
         return ('恭喜你已经成功绑定家居客户端','text')
 
     def Click(self):
-        pass
+        event_key = self.msg.get('EventKey','')
+        uid = int(self.redis.hget("wx_user:%s"%self.from_user,'uid'))
+
+        if self.redis.hexists("user:%d"%uid, "device_id"):
+            device_id = int(self.hget("user:%d"%uid,"device_id"))
+            conn = rpyc.connect('127.0.0.1', 8889)
+            if event_key == 'LIGHT_ON' or event_key == 'LIGHT_OFF' or event_key == 'REAL_TEMPERATURE':
+                req_msg = {'uid':uid,'device_id':device_id,'key':event_key,'info':event_key}
+                res = conn.root.handleMessage(json.dumps(req_msg))
+                conn.close()
+                res_dict = json.loads(res)
+                status = res_dict['status']
+                if status == -1:
+                    return ('客户端未接入互联网或者已断线','text')
+                elif status = 0:
+                    return (res_dict['info'],'text')
+            else:
+                # other key
+                pass
+        else:
+            return ('您还为绑定家居客户端，请先绑定','text')
 
     def View(self):
         pass
