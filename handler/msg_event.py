@@ -73,7 +73,7 @@ class EventMsg(object):
         uid = int(self.redis.hget("wx_user:%s"%self.from_user,'uid'))
 
         if self.redis.hexists("user:%d"%uid, "device_id"):
-            device_id = int(self.redishget("user:%d"%uid,"device_id"))
+            device_id = int(self.redis.hget("user:%d"%uid,"device_id"))
             conn = rpyc.connect('127.0.0.1', 8889)
             if event_key == 'LIGHT_ON' or event_key == 'LIGHT_OFF' or event_key == 'REAL_TEMPERATURE':
                 req_msg = {'uid':uid,'device_id':device_id,'key':event_key,'info':event_key}
