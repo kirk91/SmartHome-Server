@@ -39,7 +39,11 @@ class RpcService(Service):
             req_msg = {'key':key,'info':info,'uid':uid}
             try:
                 conn.send(json.dumps(req_msg))
-                return conn.recv(2048)
+                data = conn.recv(2048)
+                if not data:
+                    return json.dumps({'status':-1,'err_msg':'device can not access internet'})
+                else:
+                    return data
             except Exception,e:
                 print e
                 conn.close()
