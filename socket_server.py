@@ -36,7 +36,7 @@ class RpcService(Service):
         key = msg_dict['key']
         if socket_server.conns.has_key(device_id):
             conn = socket_server.conns[device_id]
-            req_msg = {'key':key,'info':info}
+            req_msg = {'key':key,'info':info,'uid':uid}
             conn.send(json.dumps(req_msg))
             return conn.recv(2048)
         else:
