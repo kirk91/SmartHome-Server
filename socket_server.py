@@ -8,6 +8,8 @@ from rpyc.utils.server import ThreadedServer
 import socket
 import threading
 import random
+import redis
+import config
 
 class TestService(Service):
     def __init__(self,*args,**kwargs):
@@ -50,6 +52,7 @@ class SocketServer(threading.Thread):
         self.ss.bind((host,port))
         self.ss.listen(100)
         self.conns = {}
+        self.redis = redis.Redis(host=config.redis_host,port= config.redis_port,db=config.redis_db)
 
     def serve(self):
         print "socket_server starting...\n"
@@ -58,12 +61,16 @@ class SocketServer(threading.Thread):
             login_msg = conn.recv(2048)
             try:
                 login_msg = json.loads(login_msg)
-                device_id = login_msg['device_id']
+                device_id = int(login_msg['device_id'])
                 info = login_msg['info']
-                if info == 'login':
+                if info == 'login' and self.redis.sismember('device:list',device_id):
                     #将conn与device_id 对应起来
                     self.conns[device_id]=conn
-                    conn.send('Login success!')
+                    response = {'status':0,'err_msg':'','info':"Login Success"}
+                    conn.send(json.dumps(response))
+                else:
+                    response = {'status':-1,'err_msg':'invalid device_id','info':'Login error'}
+                    conn.send(json.dumps(response))
             except Exception,e:
                 print e
 
