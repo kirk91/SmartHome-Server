@@ -34,7 +34,7 @@ class RpcService(Service):
         device_id = int(msg_dict['device_id'])
         info = msg_dict['info']
         key = msg_dict['key']
-        if socket_server.conns.has_key(device_id):
+        if socket_server.conns.has_key(device_id) and socket_server.conns[device_id]:
             conn = socket_server.conns[device_id]
             req_msg = {'key':key,'info':info,'uid':uid}
             try:
@@ -47,6 +47,7 @@ class RpcService(Service):
             except Exception,e:
                 print e
                 conn.close()
+                socket_server.conns[device_id]=''
                 return json.dumps({'status':-1,'err_msg':'device can not access internet'})
 
         else:
