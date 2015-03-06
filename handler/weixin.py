@@ -16,6 +16,7 @@ try:
 except:
     from xml.etree import ElementInclude as ET
 import msg_event
+import msg_text
 
 class WechatHandler(tornado.web.RequestHandler):
     def get(self):
@@ -34,6 +35,7 @@ class WechatHandler(tornado.web.RequestHandler):
             msg_type = msg.get('MsgType')
             msg_action = {
                 "event" : msg_event.EventMsg,
+                "text" : msg_text.TextMsg,
             }
 
             msg_handler = msg_action.get(msg_type)(msg)
