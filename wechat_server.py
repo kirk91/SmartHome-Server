@@ -12,7 +12,7 @@ from application import app
 import config
 
 from tornado.options import define,options
-define("port",default=80,help="wechat_server run on the given port",type=int)
+define("port",default=8887,help="wechat_server run on the given port",type=int)
 
 def main():
     tornado.options.parse_command_line()
