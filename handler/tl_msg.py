@@ -1,6 +1,11 @@
 # coding: utf-8
 
 import json
+import logging
+import hashlib
+
+import config
+from libs import mcurl
 
 
 class TlMsg(object):
@@ -13,11 +18,27 @@ class TlMsg(object):
     MSG_TRAIN_TYPE = 305000
     MSG_FLIGHT_TYPE = 306000
 
-    def __init__(self, msg):
-        self.msg = json.loads(msg)
-        self.msg_code = self.msg['code']
+    def __init__(self, userid, info):
+        self.userid = userid
+        self._encrypt_userid()
+        self.info = info
+        self.curl = mcurl.CurlHelper()
 
-    def parse(self):
+    def _encrypt_userid(self):
+        md5 = hashlib.md5()
+        md5.update(self.userid)
+        self.userid = md5.hexdigest()
+
+    def get(self):
+        api_url = '%s?key=%s&info=%s&userid=%s' % (
+            config.tuling_robot_api, config.tuling_robot_key,
+            self.info, self.userid)
+        resp = self.curl.get(api_url)
+        logging.info('receive %s from tuling_robot' % (resp))
+        self.msg = json.loads(resp)
+        return self._parse_msg()
+
+    def _parse_msg(self):
         if self.msg_code == self.MSG_TEXT_TYPE:
             return self.msg['text'], 'text'
         elif self.msg_code == self.MSG_LINK_TYPE:
