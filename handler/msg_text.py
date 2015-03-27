@@ -3,10 +3,10 @@
 import time
 import hashlib
 import logging
-import json
 
 import config
 from libs import mcurl
+from . import tl_msg
 
 
 class TextMsg(object):
@@ -27,9 +27,18 @@ class TextMsg(object):
 
         robot_resp = mcurl.CurlHelper().get(chat_robot_url)
         logging.info('receive %s from tuling_robot' % (robot_resp))
-        robot_resp_dic = json.loads(robot_resp)
 
-        resp_msg = robot_resp_dic['text']
+        resp_msg, resp_msg_type = tl_msg.TlMsg(robot_resp).handle()
         curr_timestamp = int(time.time())
-        return config.TextTpl % (self.from_user,
-                                 self.to_user, curr_timestamp, resp_msg)
+
+        if resp_msg_type == 'text':
+            return config.TextTpl % (self.from_user, self.to_user,
+                                     curr_timestamp, resp_msg)
+        elif resp_msg_type == 'multitext':
+            items = ''
+            for content in resp_msg:
+                items += config.MultiItemTpl % (
+                    content['title'], content['description'],
+                    content['picurl'], content['url'])
+            return config.MultiTextTpl % (self.from_user, self.to_user,
+                                          curr_timestamp, len(resp_msg), items)
