@@ -36,7 +36,7 @@ class TlMsg(object):
             res.append({"title": train['trainnum'],
                         "description": '',
                         "picurl": '%s' % (train['icon'], ),
-                        "url": '%s' % (train['detailurl'], )})
+                        "url": '%s' % (train.get('detailurl', ''), )})
         return res, 'multitext'
 
     def _parse_flight(self):
@@ -46,5 +46,5 @@ class TlMsg(object):
             res.append({"title": '%s' % (flight['flight']),
                         "description": '',
                         "picurl": flight['icon'],
-                        "url": flight['detailurl']})
+                        "url": flight.get('detailurl', '')})
         return res, 'multitext'
