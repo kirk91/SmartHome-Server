@@ -17,3 +17,7 @@ TextTpl = '''<xml>
                 <Content><![CDATA[%s]]></Content>
                 </xml>'''
 
+
+# robot
+tuling_robot_api = 'http://www.tuling123.com/openapi/api'
+tuling_robot_key = '77dcd53ef86d9c4b2cebf35041ecbafd'
