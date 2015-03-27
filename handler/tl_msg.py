@@ -36,6 +36,7 @@ class TlMsg(object):
         resp = self.curl.get(api_url)
         logging.info('receive %s from tuling_robot' % (resp))
         self.msg = json.loads(resp)
+        self.msg_code = self.msg['code']
         return self._parse_msg()
 
     def _parse_msg(self):
