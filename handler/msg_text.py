@@ -28,7 +28,7 @@ class TextMsg(object):
         robot_resp = mcurl.CurlHelper().get(chat_robot_url)
         logging.info('receive %s from tuling_robot' % (robot_resp))
 
-        resp_msg, resp_msg_type = tl_msg.TlMsg(robot_resp).handle()
+        resp_msg, resp_msg_type = tl_msg.TlMsg(robot_resp).parse()
         curr_timestamp = int(time.time())
 
         if resp_msg_type == 'text':
