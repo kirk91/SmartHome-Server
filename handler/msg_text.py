@@ -23,7 +23,7 @@ class TextMsg(object):
         md5.update(self.from_user)
         userid = md5.hexdigest()
         chat_robot_url = '%s?key=%s&info=%s&userid=%s' % (
-            config.tuling_robot_api, config.tuling_robot_api, info, userid)
+            config.tuling_robot_api, config.tuling_robot_key, info, userid)
 
         robot_resp = mcurl.CurlHelper().get(chat_robot_url)
         logging.info('receive %s from tuling_robot' % (robot_resp))
