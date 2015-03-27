@@ -1,18 +1,19 @@
-# coding:utf-8
+# coding: utf-8
 
 import time
 
-import config
 from . import tl_msg
+import config
 
 
-class TextMsg(object):
-
+class VoiceMsg(object):
+    '''Voice Msg
+    '''
     def __init__(self, msg):
         self.msg = msg
         self.to_user = msg.get('ToUserName')
         self.from_user = msg.get('FromUserName')
-        self.content = msg.get('Content')
+        self.content = msg.get('Recognition')
 
     def handle(self):
         resp_msg, resp_msg_type = \

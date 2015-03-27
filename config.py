@@ -17,3 +17,24 @@ TextTpl = '''<xml>
                 <Content><![CDATA[%s]]></Content>
                 </xml>'''
 
+MultiTextTpl = '''<xml>
+                    <ToUserName><![CDATA[%s]]></ToUserName>
+                    <FromUserName><![CDATA[%s]]></FromUserName>
+                    <CreateTime>%d</CreateTime>
+                    <MsgType><![CDATA[news]]></MsgType>
+                    <ArticleCount>%d</ArticleCount>
+                    <Articles>
+                    %s
+                    </Articles>
+                    </xml>'''
+
+MultiItemTpl = '''<item>
+                    <Title><![CDATA[%s]]></Title>
+                    <Description><![CDATA[%s]]></Description>
+                    <PicUrl><![CDATA[%s]]></PicUrl>
+                    <Url><![CDATA[%s]]></Url>
+                    </item>'''
+
+# robot
+tuling_robot_api = 'http://www.tuling123.com/openapi/api'
+tuling_robot_key = '77dcd53ef86d9c4b2cebf35041ecbafd'

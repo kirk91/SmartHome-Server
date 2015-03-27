@@ -1,0 +1,36 @@
+ {
+  "button":[
+  {
+    "type":"click",
+    "name":"温度湿度",
+    "key":"REAL_TEMPERATURE"
+  },
+  {
+    "name":"电灯",
+    "sub_button":[
+    {
+      "type":"click",
+      "name":"打开",
+      "key":"LIGHT_ON"
+    },
+    {
+      "type":"click",
+      "name":"关闭",
+      "key":"LIGHT_OFF"
+    }]
+  },
+  {
+    "name": "扫码",
+    "sub_button": [
+    {
+      "type": "scancode_waitmsg",
+      "name": "扫码带提示",
+      "key": "scancode_waitmsg"
+    },
+    {
+      "type": "scancode_push",
+      "name": "扫码事件",
+      "key": "scancode_push"
+    }]
+  }]
+ }
