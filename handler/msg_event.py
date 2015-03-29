@@ -83,6 +83,9 @@ class EventMsg(object):
                 status = res_dict['status']
                 if status == -1:
                     if res_dict.get('info'):
+                        if event_key == 'REAL_TEMPERATURE':
+                            info = res_dict['info']
+                            return '湿度：%s%% 温度：%s℃' % (info['humidity'], info['temperature']) ,'text'
                         return res_dict['info'], 'text'
                     else:
                         return ('客户端未接入互联网或者已断线','text')
