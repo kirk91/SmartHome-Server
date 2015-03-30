@@ -21,6 +21,8 @@ class EventMsg(object):
              "subscribe" : self.Subscribe,
              "unsubscribe": self.UnSubscribe,
              "SCAN" : self.Scan,
+             "scancode_push": self._scan_push,
+             "scancode_waitmsg": self._scan_waitmsg,
              "CLICK": self.Click,
              "VIEW": self.View,
              "LOCATION": self.Location,
@@ -59,6 +61,12 @@ class EventMsg(object):
     def  UnSubscribe(self):
         # 先不删除用户
         return ('成功取消关注','text')
+
+    def _scan_waitmsg(self):
+        return '', 'text'
+
+    def _scan_push(self):
+        return '', 'text'
 
     def Scan(self):
         # 这里缺少用户绑定新的树莓派客户端的检测
