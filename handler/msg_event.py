@@ -6,6 +6,7 @@ import config
 import time
 import rpyc
 import json
+import loggging
 
 class EventMsg(object):
     def __init__(self,msg):
@@ -63,7 +64,13 @@ class EventMsg(object):
         return ('成功取消关注','text')
 
     def _scan_waitmsg(self):
-        return 'test', 'text'
+        # return 'test', 'text'
+        loggging.info('%r' % self.msg)
+        event_key = self.msg.get('EventKey')
+        if event_key == 'BIND':
+            return 'bind', 'text'
+        return 'waitmsg', 'text'
+
 
     def _scan_push(self):
         return '', 'text'
