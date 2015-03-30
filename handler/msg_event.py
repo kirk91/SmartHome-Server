@@ -6,7 +6,7 @@ import config
 import time
 import rpyc
 import json
-import loggging
+import logging
 
 class EventMsg(object):
     def __init__(self,msg):
