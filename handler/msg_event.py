@@ -79,7 +79,8 @@ class EventMsg(object):
                     return '设备违法, 请使用原厂设备', 'text'
             else:
                 logging.info('scan type:%s  result:%s' % (scan_code_info['ScanType'], scan_code_info['ScanResult'])
-                return '%s %s' % (scan_code_info['ScanType'], scan_code_info['ScanResult'],), 'text'
+                return '%s %s' % (scan_code_info['ScanType'], scan_code_info['ScanResult']), 'text'
+
             return 'bind', 'text'
         return 'waitmsg', 'text'
 
