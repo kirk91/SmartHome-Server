@@ -20,17 +20,16 @@
     }]
   },
   {
-    "name": "扫码",
+    "name": "个人中心",
     "sub_button": [
     {
       "type": "scancode_waitmsg",
-      "name": "扫码带提示",
-      "key": "scancode_waitmsg"
+      "name": "客户端绑定",
+      "key": "BIND"
     },
-    {
-      "type": "scancode_push",
-      "name": "扫码事件",
-      "key": "scancode_push"
+    { "type": "click",
+      "name": "我的设备",
+      "key": "MY_DEVICE"
     }]
   }]
  }
