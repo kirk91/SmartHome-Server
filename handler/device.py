@@ -46,6 +46,7 @@ class QrcodeHandler(tornado.web.RequestHandler):
             qr_url = res_dict.get('url')
             self.redis.hset("device:%d" % device_id, 'qr_ticket', qr_ticket)
             self.redis.hset("device:%d" % device_id, 'qr_url', qr_url)
+            self.redis.set("%s" % qr_url, device_id)
 
             # 向客户端返回图片
             self.write(('<img src="https://mp.weixin.qq.com/cgi-bin/'

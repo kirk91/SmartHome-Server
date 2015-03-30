@@ -64,10 +64,22 @@ class EventMsg(object):
         return ('成功取消关注','text')
 
     def _scan_waitmsg(self):
-        # return 'test', 'text'
-        loggging.info('%r' % self.msg)
+        logging.info('%r' % self.msg)
         event_key = self.msg.get('EventKey')
-        if event_key == 'BIND':
+        # if event_key == 'BIND':
+        if event_key:
+            scan_code_info = self.msg['ScanCodeInfo']
+            scan_res = scan_code_info['ScanResult']
+            if scan_res and self.redis.exists(scan_res):
+                device_id = int(self.redis.get(scan_res))
+                if device_id:
+                    self._bind(device_id)
+                    return '恭喜您已成功绑定设备', 'text'
+                else:
+                    return '设备违法, 请使用原厂设备', 'text'
+            else:
+                logging.info('scan type:%s  result:%s' % (scan_code_info['ScanType'], scan_code_info['ScanResult'])
+                return '%s %s' % (scan_code_info['ScanType'], scan_code_info['ScanResult'],), 'text'
             return 'bind', 'text'
         return 'waitmsg', 'text'
 
@@ -75,11 +87,15 @@ class EventMsg(object):
     def _scan_push(self):
         return '', 'text'
 
-    def Scan(self):
-        # 这里缺少用户绑定新的树莓派客户端的检测
-        event_key = self.msg.get('EventKey')
+    def _bind(self, device_id):
         user_id = int(self.redis.hget("wx_user:%s"%self.from_user, 'uid'))
         self.redis.hset("user:%d"%user_id, "device_id", event_key)
+        logging.info('%s bind %s' % (user_id, device_id))
+
+    def Scan(self):
+        # 这里缺少用户绑定新的树莓派客户端的检测
+        device_id = self.msg.get('EventKey')
+        self._bind(device_id)
 
         return ('恭喜你已经成功绑定家居客户端','text')
 

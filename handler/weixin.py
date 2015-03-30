@@ -69,5 +69,9 @@ class WechatHandler(tornado.web.RequestHandler):
         root = ET.fromstring(xml_str)
         if root.tag == 'xml':
             for child in root:
+                if child.getchildren():
+                    child.text = dict()
+                    for subchild in child:
+                        child.text[subchild.tag] = subchild.text
                 msg[child.tag] = child.text
         return msg
