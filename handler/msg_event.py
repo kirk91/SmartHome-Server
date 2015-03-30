@@ -66,7 +66,6 @@ class EventMsg(object):
     def _scan_waitmsg(self):
         logging.info('%r' % self.msg)
         event_key = self.msg.get('EventKey')
-        # if event_key == 'BIND':
         if event_key:
             scan_code_info = self.msg['ScanCodeInfo']
             scan_res = scan_code_info['ScanResult']
@@ -89,7 +88,7 @@ class EventMsg(object):
 
     def _bind(self, device_id):
         user_id = int(self.redis.hget("wx_user:%s"%self.from_user, 'uid'))
-        self.redis.hset("user:%d"%user_id, "device_id", event_key)
+        self.redis.hset("user:%d"%user_id, "device_id", device_id)
         logging.info('%s bind %s' % (user_id, device_id))
 
     def Scan(self):
