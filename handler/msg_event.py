@@ -64,9 +64,8 @@ class EventMsg(object):
         return ('成功取消关注','text')
 
     def _scan_waitmsg(self):
-        logging.info('%r' % self.msg)
         event_key = self.msg.get('EventKey')
-        if event_key:
+        if event_key == 'BIND':
             scan_code_info = self.msg['ScanCodeInfo']
             scan_res = scan_code_info['ScanResult']
             if scan_res and self.redis.exists(scan_res):
@@ -79,9 +78,8 @@ class EventMsg(object):
             else:
                 logging.info('%r' % scan_code_info)
                 return '%s %s' % (scan_code_info['ScanType'], scan_code_info['ScanResult']), 'text'
-
-            return 'bind', 'text'
-        return 'waitmsg', 'text'
+        else:
+            return event_key, 'text'
 
     def _scan_push(self):
         return '', 'text'
@@ -89,7 +87,7 @@ class EventMsg(object):
     def _bind(self, device_id):
         user_id = int(self.redis.hget("wx_user:%s"%self.from_user, 'uid'))
         self.redis.hset("user:%d"%user_id, "device_id", device_id)
-        logging.info('%s bind %s' % (user_id, device_id))
+        logging.info('user:%s bind device:%s' % (user_id, device_id))
 
     def Scan(self):
         # 这里缺少用户绑定新的树莓派客户端的检测
@@ -103,7 +101,11 @@ class EventMsg(object):
         uid = int(self.redis.hget("wx_user:%s"%self.from_user,'uid'))
 
         if self.redis.hexists("user:%d"%uid, "device_id"):
+            # 需要根据功能拆分
             device_id = int(self.redis.hget("user:%d"%uid,"device_id"))
+            if event_key == 'MY_DEVICE':
+                return '您的设备id为%s' % device_id , 'text'
+
             conn = rpyc.connect('127.0.0.1', 8889)
             if event_key == 'LIGHT_ON' or event_key == 'LIGHT_OFF' or event_key == 'REAL_TEMPERATURE':
                 req_msg = {'uid':uid,'device_id':device_id,'key':event_key,'info':event_key}
