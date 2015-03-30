@@ -63,7 +63,7 @@ class EventMsg(object):
         return ('成功取消关注','text')
 
     def _scan_waitmsg(self):
-        return '', 'text'
+        return 'test', 'text'
 
     def _scan_push(self):
         return '', 'text'
