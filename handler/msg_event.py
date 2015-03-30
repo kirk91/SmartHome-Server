@@ -78,12 +78,11 @@ class EventMsg(object):
                 else:
                     return '设备违法, 请使用原厂设备', 'text'
             else:
-                logging.info('scan type:%s  result:%s' % (scan_code_info['ScanType'], scan_code_info['ScanResult'])
+                logging.info('%r' % scan_code_info)
                 return '%s %s' % (scan_code_info['ScanType'], scan_code_info['ScanResult']), 'text'
 
             return 'bind', 'text'
         return 'waitmsg', 'text'
-
 
     def _scan_push(self):
         return '', 'text'
