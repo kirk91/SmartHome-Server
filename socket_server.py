@@ -5,10 +5,12 @@ import socket
 import json
 from rpyc import Service
 from rpyc.utils.server import ThreadedServer
-import socket
+
 import threading
 import random
 import redis
+import signal
+
 import config
 
 
@@ -32,30 +34,39 @@ class TestService(Service):
 class RpcService(Service):
 
     def exposed_handleMessage(self, msg):
+        def _timeout_handler(signum, frame):
+            raise AssertionError
+
         msg_dict = json.loads(msg)
         uid = msg_dict['uid']
         device_id = int(msg_dict['device_id'])
         info = msg_dict['info']
         key = msg_dict['key']
-        if socket_server.conns.has_key(device_id) and socket_server.conns[device_id]:
+        if device_id in socket_server.conns and \
+                socket_server.conns[device_id]:
             conn = socket_server.conns[device_id]
             req_msg = {'key': key, 'info': info, 'uid': uid}
             try:
+                signal.signal(signal.SIGALRM, _timeout_handler)
+                signal.alarm(2)
                 conn.send(json.dumps(req_msg))
                 data = conn.recv(2048)
                 if not data:
                     return json.dumps({'status': -1,
-                                       'err_msg': 'device do not acess internet'})
+                                       'err_msg': ('device do not acess'
+                                                   'internet')})
                 else:
                     return data
             except Exception, e:
                 print e
                 conn.close()
                 socket_server.conns[device_id] = ''
-                return json.dumps({'status': -1, 'err_msg': 'device do not access internet'})
+                return json.dumps({'status': -1,
+                                   'err_msg': 'device do not access internet'})
 
         else:
-            return json.dumps({'status': -1, 'err_msg': 'device do not access internet'})
+            return json.dumps({'status': -1,
+                               'err_msg': 'device do not access internet'})
 
 
 class SocketServer(threading.Thread):
@@ -81,15 +92,17 @@ class SocketServer(threading.Thread):
                 login_msg = json.loads(login_msg)
                 device_id = int(login_msg['device_id'])
                 info = login_msg['info']
-                if info == 'login' and self.redis.sismember('device:list', device_id):
+                if info == 'login' and \
+                        self.redis.sismember('device:list', device_id):
                     # 将conn与device_id 对应起来
                     self.conns[device_id] = conn
                     response = {
                         'status': 0, 'err_msg': '', 'info': "Login Success"}
                     conn.send(json.dumps(response))
                 else:
-                    response = {
-                        'status': -1, 'err_msg': 'invalid device_id', 'info': 'Login error'}
+                    response = {'status': -1,
+                                'err_msg': 'invalid device_id',
+                                'info': 'Login error'}
                     conn.send(json.dumps(response))
             except Exception, e:
                 print e
