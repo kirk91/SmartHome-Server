@@ -35,6 +35,7 @@ class RpcService(Service):
 
     def exposed_handleMessage(self, msg):
         def _timeout_handler(signum, frame):
+            print 'exec timeout....'
             raise AssertionError
 
         msg_dict = json.loads(msg)
