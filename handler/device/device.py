@@ -21,7 +21,20 @@ class DataHandler(tornado.web.RequestHandler):
             host=config.redis_host, port=config.redis_port, db=config.redis_db)
 
     def get(self):
-        pass
+        device_id = self.get_argument('device_id')
+        sensor_id = self.get_argument('sensor_id')
+        start = self.get_argument('start', '')
+        end = self.get_argument('end', '')
+
+        now = time.time()
+        if not start:
+            start = now - 3600
+        if not end:
+            end = now
+
+        info = self.redis.zrangebyscore('data:%s:%s' % (device_id, sensor_id),
+                                        start, end, withscores=True)
+        logging.info('%r', info)
 
     def post(self):
         data = json.loads(self.request.body)
