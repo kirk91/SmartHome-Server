@@ -6,6 +6,7 @@ import config
 import time
 import rpyc
 import json
+import logging
 
 class EventMsg(object):
     def __init__(self,msg):
@@ -21,6 +22,8 @@ class EventMsg(object):
              "subscribe" : self.Subscribe,
              "unsubscribe": self.UnSubscribe,
              "SCAN" : self.Scan,
+             "scancode_push": self._scan_push,
+             "scancode_waitmsg": self._scan_waitmsg,
              "CLICK": self.Click,
              "VIEW": self.View,
              "LOCATION": self.Location,
@@ -60,11 +63,36 @@ class EventMsg(object):
         # 先不删除用户
         return ('成功取消关注','text')
 
+    def _scan_waitmsg(self):
+        event_key = self.msg.get('EventKey')
+        if event_key == 'BIND':
+            scan_code_info = self.msg['ScanCodeInfo']
+            scan_res = scan_code_info['ScanResult']
+            if scan_res and self.redis.exists(scan_res):
+                device_id = int(self.redis.get(scan_res))
+                if device_id:
+                    self._bind(device_id)
+                    return '恭喜您已成功绑定设备', 'text'
+                else:
+                    return '设备违法, 请使用原厂设备', 'text'
+            else:
+                logging.info('%r' % scan_code_info)
+                return '%s %s' % (scan_code_info['ScanType'], scan_code_info['ScanResult']), 'text'
+        else:
+            return event_key, 'text'
+
+    def _scan_push(self):
+        return '', 'text'
+
+    def _bind(self, device_id):
+        user_id = int(self.redis.hget("wx_user:%s"%self.from_user, 'uid'))
+        self.redis.hset("user:%d"%user_id, "device_id", device_id)
+        logging.info('user:%s bind device:%s' % (user_id, device_id))
+
     def Scan(self):
         # 这里缺少用户绑定新的树莓派客户端的检测
-        event_key = self.msg.get('EventKey')
-        user_id = int(self.redis.hget("wx_user:%s"%self.from_user, 'uid'))
-        self.redis.hset("user:%d"%user_id, "device_id", event_key)
+        device_id = self.msg.get('EventKey')
+        self._bind(device_id)
 
         return ('恭喜你已经成功绑定家居客户端','text')
 
@@ -73,7 +101,11 @@ class EventMsg(object):
         uid = int(self.redis.hget("wx_user:%s"%self.from_user,'uid'))
 
         if self.redis.hexists("user:%d"%uid, "device_id"):
+            # 需要根据功能拆分
             device_id = int(self.redis.hget("user:%d"%uid,"device_id"))
+            if event_key == 'MY_DEVICE':
+                return '您的设备id为%s' % device_id , 'text'
+
             conn = rpyc.connect('127.0.0.1', 8889)
             if event_key == 'LIGHT_ON' or event_key == 'LIGHT_OFF' or event_key == 'REAL_TEMPERATURE':
                 req_msg = {'uid':uid,'device_id':device_id,'key':event_key,'info':event_key}
@@ -82,8 +114,14 @@ class EventMsg(object):
                 res_dict = json.loads(res)
                 status = res_dict['status']
                 if status == -1:
-                    return ('客户端未接入互联网或者已断线','text')
+                    if res_dict.get('info'):
+                        return res_dict['info'], 'text'
+                    else:
+                        return ('客户端未接入互联网或者已断线','text')
                 elif status == 0:
+                    if event_key == 'REAL_TEMPERATURE':
+                        info = res_dict['info']
+                        return '湿度：%s%% 温度：%s℃' % (info['humidity'], info['temperature']) ,'text'
                     return (res_dict['info'],'text')
             else:
                 # other key

@@ -26,8 +26,9 @@ class QrcodeHandler(tornado.web.RequestHandler):
             if self.redis.sismember("device:list", device_id):
                 qr_ticket = self.redis.hget(
                     "device:%d" % device_id, "qr_ticket")
-                self.write('''<img src="https://mp.weixin.qq.com/cgi-bin/
-                    showqrcode?ticket=%s" width=250px>''' % (qr_ticket,))
+                self.write(('<img src="https://mp.weixin.qq.com/cgi-bin/'
+                            'showqrcode?ticket=%s" width=250px>') %
+                           (qr_ticket,))
             else:
                 self.write("Device does not exist !!!")
         elif q == 'generate' and user == 'hanliang':
@@ -36,8 +37,8 @@ class QrcodeHandler(tornado.web.RequestHandler):
             access_token = self.getAccessToken()
             post_data = {"action_name": "QR_LIMIT_SCENE",
                          "action_info": {"scene": {"scene_id": device_id}}}
-            res = self.curl.post('''https://api.weixin.qq.com/cgi-bin/qrcode/
-                                create?access_token=%s''',
+            res = self.curl.post(('https://api.weixin.qq.com/cgi-bin/qrcode/'
+                                  'create?access_token=%s'),
                                  (access_token,),
                                  json.dumps(post_data))
             res_dict = json.loads(res)
@@ -45,10 +46,11 @@ class QrcodeHandler(tornado.web.RequestHandler):
             qr_url = res_dict.get('url')
             self.redis.hset("device:%d" % device_id, 'qr_ticket', qr_ticket)
             self.redis.hset("device:%d" % device_id, 'qr_url', qr_url)
+            self.redis.set("%s" % qr_url, device_id)
 
             # 向客户端返回图片
-            self.write('''<img src="https://mp.weixin.qq.com/cgi-bin/
-                showqrcode?ticket=%s" width=250px>''' % qr_ticket)
+            self.write(('<img src="https://mp.weixin.qq.com/cgi-bin/'
+                        'showqrcode?ticket=%s" width=250px>') % qr_ticket)
         else:
             self.write('hello, welcome to device center !')
 
@@ -57,8 +59,9 @@ class QrcodeHandler(tornado.web.RequestHandler):
             return self.redis.get("weixin_accesstoken")
         else:
             # 重新获取accesstoken并存入redis
-            res = self.curl. get('''https://api.weixin.qq.com/cgi-bin/
-                token?grant_type=client_credential&appid=%s&secret=%s''',
+            res = self.curl. get(('https://api.weixin.qq.com/cgi-bin/token?'
+                                  'grant_type=client_credential&appid=%s'
+                                  '&secret=%s'),
                                  (config.appid, config.appsecret))
             res_dict = json.loads(res)
             self.redis.set("weixin_accesstoken", res_dict.get(
