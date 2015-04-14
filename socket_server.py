@@ -31,7 +31,7 @@ class RpcService(Service):
             except Exception, e:
                 print e
                 conn.close()
-                socket.server.conns.pop(device_id)
+                socket_server.conns.pop(device_id)
                 return False
         else:
             return False
