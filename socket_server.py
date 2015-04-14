@@ -7,67 +7,34 @@ from rpyc import Service
 from rpyc.utils.server import ThreadedServer
 
 import threading
-import random
 import redis
-import signal
 
 import config
 
 
-class TestService(Service):
-
-    def __init__(self, *args, **kwargs):
-        Service.__init__(self, *args, **kwargs)
-
-    def exposed_test(self, num):
-        return num + 1
-
-    def exposed_getConns(self):
-        return len(socket_server.conns)
-
-    def exposed_handleMessage(self, msg):
-        conn = socket_server.conns[1]
-        conn.send('hello %f' % random.random())
-        return conn.recv(1024)
-
-
 class RpcService(Service):
 
-    def exposed_handleMessage(self, msg):
-        def _timeout_handler(signum, frame):
-            print 'exec timeout....'
-            raise AssertionError
-
+    def exposed_handle_msg(self, msg):
         msg_dict = json.loads(msg)
-        uid = msg_dict['uid']
-        device_id = int(msg_dict['device_id'])
-        info = msg_dict['info']
-        key = msg_dict['key']
+        device_id = msg_dict['device_id']
+        sensor_id = msg_dict['sensor_id']
+        sensor_value = msg_dict['value']
         if device_id in socket_server.conns and \
                 socket_server.conns[device_id]:
             conn = socket_server.conns[device_id]
-            req_msg = {'key': key, 'info': info, 'uid': uid}
+            req_msg = {"device": device_id,
+                       "sensor": sensor_id,
+                       "command": sensor_value}
             try:
-                signal.signal(signal.SIGALRM, _timeout_handler)
-                signal.alarm(2)
                 conn.send(json.dumps(req_msg))
-                data = conn.recv(2048)
-                if not data:
-                    return json.dumps({'status': -1,
-                                       'err_msg': ('device do not acess'
-                                                   'internet')})
-                else:
-                    return data
+                return True
             except Exception, e:
                 print e
                 conn.close()
-                socket_server.conns[device_id] = ''
-                return json.dumps({'status': -1,
-                                   'err_msg': 'device do not access internet'})
-
+                socket.server.conns.pop(device_id)
+                return False
         else:
-            return json.dumps({'status': -1,
-                               'err_msg': 'device do not access internet'})
+            return False
 
 
 class SocketServer(threading.Thread):
