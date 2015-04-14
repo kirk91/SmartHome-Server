@@ -111,7 +111,7 @@ class EventMsg(object):
                    'value': value}
 
         conn = rpyc.connect('127.0.0.1', 8889)
-        res = conn.root.handleMessage(json.dumps(command))
+        res = conn.root.handle_msg(json.dumps(command))
         conn.close()
 
         if res:
