@@ -34,10 +34,6 @@ class TestService(Service):
 class RpcService(Service):
 
     def exposed_handleMessage(self, msg):
-        def _timeout_handler(signum, frame):
-            print 'exec timeout....'
-            raise AssertionError
-
         msg_dict = json.loads(msg)
         uid = msg_dict['uid']
         device_id = int(msg_dict['device_id'])
@@ -48,8 +44,6 @@ class RpcService(Service):
             conn = socket_server.conns[device_id]
             req_msg = {'key': key, 'info': info, 'uid': uid}
             try:
-                signal.signal(signal.SIGALRM, _timeout_handler)
-                signal.alarm(2)
                 conn.send(json.dumps(req_msg))
                 data = conn.recv(2048)
                 if not data:
