@@ -5,9 +5,9 @@ import socket
 import json
 from rpyc import Service
 from rpyc.utils.server import ThreadedServer
-
 import threading
 import redis
+import logging  # 需增加日志记录功能，不然不方便调试
 
 import config
 
@@ -26,12 +26,14 @@ class RpcService(Service):
                        "sensor": sensor_id,
                        "command": sensor_value}
             try:
-                conn.send(json.dumps(req_msg))
+                conn.send(json.dumps(req_msg))  # 这里客户端最好确认一下
+                conn.recv(2048)  # 不接收数据，会直接踢掉客户端
                 return True
             except Exception, e:
-                print e
+                logging.error('socker error: %r', e)
                 conn.close()
-                socket_server.conns.pop(device_id)
+                socket_server.conns.pop(device_id)  # 不接收数据的话，会直接导致删掉客户端
+                logging.info('close device %s socket', device_id)
                 return False
         else:
             return False
@@ -52,7 +54,7 @@ class SocketServer(threading.Thread):
             host=config.redis_host, port=config.redis_port, db=config.redis_db)
 
     def serve(self):
-        print "socket_server starting...\n"
+        logging.info('socket_server starting...')
         while True:
             conn, addr = self.ss.accept()
             login_msg = conn.recv(2048)
@@ -63,6 +65,7 @@ class SocketServer(threading.Thread):
                 if info == 'login' and \
                         self.redis.sismember('device:list', device_id):
                     # 将conn与device_id 对应起来
+                    logging.info('device: %s login', device_id)
                     self.conns[device_id] = conn
                     response = {
                         'status': 0, 'err_msg': '', 'info': "Login Success"}
@@ -73,7 +76,7 @@ class SocketServer(threading.Thread):
                                 'info': 'Login error'}
                     conn.send(json.dumps(response))
             except Exception, e:
-                print e
+                logging.error('error: %r', e)
 
     def close(self):
         # 关闭客户端连接
@@ -81,7 +84,7 @@ class SocketServer(threading.Thread):
             try:
                 self.conns[key].close()
             except Exception, e:
-                print e
+                logging.error('close socket error: %r', e)
         self.ss.close()
 
     def run(self):
@@ -94,7 +97,7 @@ class RpcServer(ThreadedServer):
         ThreadedServer.__init__(self, *args, **kwargs)
 
     def start(self):
-        print "rpc_server starting...\n"
+        logging.info('rpc_server starting...')
         ThreadedServer.start(self)
 
 socket_server = SocketServer('0.0.0.0', 8888)
