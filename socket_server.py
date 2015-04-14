@@ -12,6 +12,20 @@ import logging  # 需增加日志记录功能，不然不方便调试
 import config
 
 
+def _set_logger(logger):
+    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s %(filename)s['
+                                  'line:%(lineno)d] %(levelname)s %(message)s',
+                                  datefmt='%a, %d %b %Y %H:%M:%S')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+logger = logging.getLogger()
+_set_logger(logger)
+
+
 class RpcService(Service):
 
     def exposed_handle_msg(self, msg):
@@ -30,10 +44,10 @@ class RpcService(Service):
                 conn.recv(2048)  # 不接收数据，会直接踢掉客户端
                 return True
             except Exception, e:
-                logging.error('socker error: %r', e)
+                logger.error('socket send or recv error: %r', e)
                 conn.close()
                 socket_server.conns.pop(device_id)  # 不接收数据的话，会直接导致删掉客户端
-                logging.info('close device %s socket', device_id)
+                logger.info('close device %s socket', device_id)
                 return False
         else:
             return False
@@ -54,7 +68,7 @@ class SocketServer(threading.Thread):
             host=config.redis_host, port=config.redis_port, db=config.redis_db)
 
     def serve(self):
-        logging.info('socket_server starting...')
+        logger.info('socket_server starting...')
         while True:
             conn, addr = self.ss.accept()
             login_msg = conn.recv(2048)
@@ -65,7 +79,7 @@ class SocketServer(threading.Thread):
                 if info == 'login' and \
                         self.redis.sismember('device:list', device_id):
                     # 将conn与device_id 对应起来
-                    logging.info('device: %s login', device_id)
+                    logger.info('device: %s login', device_id)
                     self.conns[device_id] = conn
                     response = {
                         'status': 0, 'err_msg': '', 'info': "Login Success"}
@@ -76,7 +90,7 @@ class SocketServer(threading.Thread):
                                 'info': 'Login error'}
                     conn.send(json.dumps(response))
             except Exception, e:
-                logging.error('error: %r', e)
+                logger.error('conn error: %r', e)
 
     def close(self):
         # 关闭客户端连接
@@ -84,7 +98,7 @@ class SocketServer(threading.Thread):
             try:
                 self.conns[key].close()
             except Exception, e:
-                logging.error('close socket error: %r', e)
+                logger.error('close socket error: %r', e)
         self.ss.close()
 
     def run(self):
@@ -97,7 +111,7 @@ class RpcServer(ThreadedServer):
         ThreadedServer.__init__(self, *args, **kwargs)
 
     def start(self):
-        logging.info('rpc_server starting...')
+        logger.info('rpc_server starting...')
         ThreadedServer.start(self)
 
 socket_server = SocketServer('0.0.0.0', 8888)
