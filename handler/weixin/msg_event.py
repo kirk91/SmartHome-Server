@@ -120,7 +120,7 @@ class EventMsg(object):
             return '客户端未接入互联网或者已断线', 'text'
 
     def _click_humtem(self):
-        return '', 'text'
+        return 'hum tem', 'text'
 
     def _click_mydevice(self, device_id):
         return '您的设备id为%s' % device_id, 'text'
