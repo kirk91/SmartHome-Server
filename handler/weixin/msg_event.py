@@ -120,7 +120,7 @@ class EventMsg(object):
             return '客户端未接入互联网或者已断线', 'text'
 
     def _click_humtem(self):
-        pass
+        return '', 'text'
 
     def _click_mydevice(self, device_id):
         return '您的设备id为%s' % device_id, 'text'
@@ -134,10 +134,10 @@ class EventMsg(object):
             if event_key == 'MY_DEVICE':
                 return self._click_mydevice(device_id)
             elif event_key == 'REAL_TEMPERATURE':
-                self._click_humtem()
+                return self._click_humtem()
             elif event_key == 'LIGHT_ON' or \
                     event_key == 'LIGHT_OFF':
-                self._click_light(event_key, device_id)
+                return self._click_light(event_key, device_id)
             else:
                 return ('%s暂时还没有定义, 正在开发中...' % event_key, 'text')
         else:
