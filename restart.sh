@@ -1,3 +1,2 @@
-sh stop.sh
+sh sotp.sh
 sh start.sh
-

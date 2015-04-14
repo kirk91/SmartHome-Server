@@ -4,7 +4,7 @@
 import tornado.web
 
 import redis
-from libs import mcurl
+from ..lib import mcurl
 import config
 import json
 
@@ -34,7 +34,7 @@ class QrcodeHandler(tornado.web.RequestHandler):
         elif q == 'generate' and user == 'hanliang':
             device_id = self.redis.incr("device:id")
             self.redis.sadd("device:list", device_id)
-            access_token = self.getAccessToken()
+            access_token = self._get_access_token()
             post_data = {"action_name": "QR_LIMIT_SCENE",
                          "action_info": {"scene": {"scene_id": device_id}}}
             res = self.curl.post(('https://api.weixin.qq.com/cgi-bin/qrcode/'
@@ -54,7 +54,7 @@ class QrcodeHandler(tornado.web.RequestHandler):
         else:
             self.write('hello, welcome to device center !')
 
-    def getAccessToken(self):
+    def _get_access_token(self):
         if self.redis.exists("weixin_accesstoken"):
             return self.redis.get("weixin_accesstoken")
         else:
