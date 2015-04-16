@@ -40,20 +40,9 @@ class RpcService(Service):
                        "sensor": sensor_id,
                        "command": sensor_value}
             try:
-<<<<<<< HEAD
-                conn.send(json.dumps(req_msg))
-                data = conn.recv(2048)
-                if not data:
-                    return json.dumps({'status': -1,
-                                       'err_msg': ('device do not acess'
-                                                   'internet')})
-                else:
-                    return data
-=======
                 conn.send(json.dumps(req_msg))  # 这里客户端最好确认一下
                 conn.recv(2048)  # 不接收数据，会直接踢掉客户端
                 return True
->>>>>>> c47de853b8b7c9ddf3e211bddafa144c34fb9c0e
             except Exception, e:
                 logger.error('socket send or recv error: %r', e)
                 conn.close()
