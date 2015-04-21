@@ -3,35 +3,30 @@
 
 import tornado.web
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
-
-import config
 import hashlib
 import logging
 try:
-    from xml.etree import cElementTree as ET
+    from xml.etree import cElementTree as ET # noqa
 except:
-    from xml.etree import ElementInclude as ET
+    from xml.etree import ElementInclude as ET # noqa
 
-from . import msg_text
-from . import msg_event
-from . import msg_voice
+from .. import config
+from .msg import msg_text
+from .msg import msg_event
+from .msg import msg_voice
 
 
 class WechatHandler(tornado.web.RequestHandler):
 
     def get(self):
         echostr = self.get_argument('echostr', '')
-        if self._checkSignature() and echostr:
+        if self._check_signature() and echostr:
             self.write(echostr)
         else:
             self.write('hello,weixin')
 
     def post(self):
-        if self._checkSignature():
+        if self._check_signature():
             # handle message
             logging.info(self.request.body)
 
@@ -50,7 +45,7 @@ class WechatHandler(tornado.web.RequestHandler):
         else:
             self.write('hello,weixin')
 
-    def _checkSignature(self):
+    def _check_signature(self):
         signature = self.get_argument('signature', '')
         nonce = self.get_argument('nonce', '')
         timestamp = self.get_argument('timestamp', '')

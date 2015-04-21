@@ -5,7 +5,7 @@ import tornado.web
 
 import redis
 from ..lib import mcurl
-import config
+from .. import config
 import json
 
 

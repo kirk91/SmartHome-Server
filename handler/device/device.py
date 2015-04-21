@@ -7,7 +7,7 @@ import json
 import time
 import logging
 
-import config
+from .. import config
 
 
 class DataHandler(tornado.web.RequestHandler):

@@ -4,8 +4,8 @@ import json
 import logging
 import hashlib
 
-import config
-from libs import mcurl
+from ... import config
+from ...lib import mcurl
 
 
 class TlMsg(object):

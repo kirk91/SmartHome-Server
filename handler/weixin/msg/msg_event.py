@@ -2,11 +2,12 @@
 # coding:utf-8
 
 import redis
-import config
 import time
 import rpyc
 import json
 import logging
+
+from ... import config
 
 
 class EventMsg(object):
