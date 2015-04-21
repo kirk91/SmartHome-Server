@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>设备列表</title>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css"></head>
+<body>
+  <div class="container">
+    <div class="list-group">
+      {% for item in items %}
+      <a href="/device/{{ item }}" class="list-group-item">设备{{ item }}</a>
+      {% end %}
+    </div>
+  </div>
+  <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+  <script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</body>
+</html>
