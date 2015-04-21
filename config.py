@@ -10,7 +10,7 @@ wx_auth_uri = ('https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s'
                '&secret=%s&code=%s&grant_type=authorization_code')
 wx_snsapi_base = 'snsapi_base'
 wx_snsapi_userinfo = 'snsapi_userinfo'
-wx_redirect_uri = 'http://sun.codemagic.tk/auth'
+wx_redirect_uri = 'http://sun.codemagic.tk/weixin/auth'
 
 # redis db
 redis_host = '127.0.0.1'

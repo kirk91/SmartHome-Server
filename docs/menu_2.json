@@ -33,7 +33,7 @@
     },{
       "type": "view",
       "name": "查看所有",
-      "url": "http://sun.codemagic.tk/oauth"
+      "url": "http://sun.codemagic.tk/weixin/oauth"
     }
     ]
   }]
