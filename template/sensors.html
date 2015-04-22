@@ -1,22 +1,35 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>传感器列表</title>
-  <!-- Bootstrap -->
-  <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css"></head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>传感器列表</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
+</head>
 <body>
-  <div class="container">
-    <h1>{{ device_id }}</h1>
-    <div class="list-group">
-      {% for sid, sinfo in sensors.items() %}
-      <a href="#" class="list-group-item">{{ sid }}, {{ sinfo['type']}}</a>
-      {% end %}
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <ul class="nav nav-pills nav-stacked">
+                {% for sid, sinfo in sensors.items() %}
+                <li><a href="/device/{{ device_id }}/sensor/{{ sid }}" class="list-group-item">
+                    {% set stype=sinfo['type'] %}
+                    {% if stype == 3 %}
+                        温度湿度传感器设备{{ sid }}
+                    {% elif stype == 4 %}
+                        电灯设备{{ sid }}
+                    {% else %}
+                        未知设备{{ sid }}
+                    {% end %}
+                </a></li>
+                {% end %}
+            </ul>
+        </div>
     </div>
-  </div>
-  <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-  <script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</div>
+<script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 </body>
 </html>

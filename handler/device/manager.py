@@ -48,7 +48,7 @@ class DeviceManager(object):
 
     def get_all_sensors(self, device_id, sensor_type):
         sensors = self.sensors.get(device_id)
-        if sensor_type == '':
+        if sensor_type == 0:
             return sensors
         res = dict()
         for sensor_id, sensor_info in sensors.items():
