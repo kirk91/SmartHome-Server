@@ -18,22 +18,22 @@
                         温度曲线图
                     </h3>
                 </div>
-                <div class="col-xs-12 column" style="margin-right: 1%">
-                    <canvas id="hum" width="350px" height="230px"></canvas>
+                <div class="col-xs-12 column">
+                    <canvas id="hum" width="300px" height="200px"></canvas>
                 </div>
             </div>
         </div>
     </div>
     <div>
-         <div class="col-xs-12 column">
+        <div class="col-xs-12 column">
             <div class="row clearfix">
                 <div class="col-xs-12 column">
                     <h3 class="text-center">
-                        温度曲线图
+                        湿度曲线图
                     </h3>
                 </div>
                 <div class="col-xs-12 column">
-                    <canvas id="tem" width="350px" height="230px"></canvas>
+                    <canvas id="tem" width="300px" height="200px"></canvas>
                 </div>
             </div>
         </div>
@@ -56,7 +56,6 @@
         labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
         datasets: [
             {
-                fillColor: "rgba(151,187,205,0.5)",
                 strokeColor: "rgba(151,187,205,1)",
                 pointColor: "rgba(151,187,205,1)",
                 pointStrokeColor: "white",
@@ -64,8 +63,32 @@
             }
         ]
     }
-    hum_chart.Line(data);
-    tem_chart.Line(data);
+    var tem_data = {
+        labels: [
+            19, 20, 21, 22, 23, 00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14,
+            15, 16, 17, 18, 19
+        ],
+        datasets: [
+            {
+
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "white",
+                data: [
+                    17, 15, 15, 14, 13, 13, 12, 12, 11, 11, 11, 11, 12, 15, 17, 20, 21, 23, 24, 24,
+                    24, 24, 22, 20, 19
+                ]
+            }
+        ]
+    }
+    var options = {
+        		datasetFill : false,
+        tooltipEvents: ["mousemove"],
+        tooltipTemplate: "<%= value %>"
+
+    }
+    hum_chart.Line(data, options);
+    tem_chart.Line(tem_data, options);
 </script>
 </body>
 </html>
