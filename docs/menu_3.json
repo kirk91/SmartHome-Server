@@ -1,0 +1,49 @@
+{
+  "button": [
+    {
+      "type": "click",
+      "name": "温度湿度",
+      "key": "REAL_TEMPERATURE"
+    },
+    {
+      "name": "电灯",
+      "sub_button": [
+        {
+          "type": "click",
+          "name": "打开",
+          "key": "LIGHT_ON"
+        },
+        {
+          "type": "click",
+          "name": "关闭",
+          "key": "LIGHT_OFF"
+        }
+      ]
+    },
+    {
+      "name": "个人中心",
+      "sub_button": [
+        {
+          "type": "scancode_waitmsg",
+          "name": "客户端绑定",
+          "key": "BIND"
+        },
+        {
+          "type": "click",
+          "name": "我的设备",
+          "key": "MY_DEVICE"
+        },
+        {
+          "type": "view",
+          "name": "查看所有",
+          "url": "http://sun.codemagic.tk/weixin/oauth"
+        },
+        {
+          "type": "view",
+          "name": "测试",
+          "url": "http://sun.codemagic.tk/test"
+        }
+      ]
+    }
+  ]
+}

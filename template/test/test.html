@@ -8,11 +8,20 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/bootstrap-switch.css">
-
+    <style type="text/css">
+        .radius_border {
+            border: 1px solid #cccccc;
+            border-radius: 15px;
+            margin-top: 10%;
+            margin-left: 0.5%;
+            margin-right: 0.5%;
+            padding-bottom: 5%;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <div class="row clearfix table-bordered" style="margin-top: 10%; margin-left:0.5%;margin-right:0.5%;padding-bottom:5%;">
+    <div class="row clearfix radius_border">
         <div class="col-md-12 column">
             <div class="row clearfix">
                 <div class="col-md-12 column">
@@ -23,19 +32,19 @@
                 </div>
                 <div class="col-md-12 column">
                     <div class="row clearfix" style="margin-left:1%">
-                        <div class="col-md-2 column text-left">
-                            <h5>家</h5>
+                        <div class="col-xs-3 column text-left">
+                            <h4>家</h4>
                         </div>
-                        <div class="col-md-4 column text-left">
-                            <h5>温度 23℃ 湿度 50%</h5><br>
-                                <a href="#">温度湿度折线图</a>
+                        <div class="col-xs-7 column text-left">
+                            <h4>温度 23℃ 湿度 50%</h4><br>
+                            <a href="#">温度湿度折线图</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row clearfix table-bordered" style="margin-top: 100px;">
+    <div class="row clearfix table-bordered radius_border">
         <div class="col-md-12 column">
             <div class="row clearfix">
                 <div class="col-md-12 column">
@@ -45,11 +54,11 @@
                     <hr>
                 </div>
                 <div class="col-md-12 column">
-                    <div class="row clearfix" style="margin-left: 1%">
-                        <div class="col-md-4 column text-left">
+                    <div class="row clearfix" style="margin-left: 1%;margin-bottom: 2%;">
+                        <div class="col-xs-3 column text-left">
                             <h4>电灯</h4>
                         </div>
-                        <div class="col-md-6 column text-center" style="">
+                        <div class="col-xs-7 column text-right" style="">
                             <input type="checkbox" name="my-checkbox" checked>
                         </div>
                     </div>
