@@ -25,3 +25,10 @@ class Testhandler(tornado.web.RequestHandler):
 
     def get(self):
         self.render('test/test.html')
+
+class Charthandler(tornado.web.RequestHandler):
+    '''
+
+    '''
+    def get(self, *args, **kwargs):
+        self.render('test/chart.html')
