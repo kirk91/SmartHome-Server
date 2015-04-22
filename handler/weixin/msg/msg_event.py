@@ -38,6 +38,14 @@ class EventMsg(object):
         if resp_msg_type == 'text':
             return config.TextTpl % \
                 (self.from_user, self.to_user, curr_timestamp, resp_msg)
+        elif resp_msg_type == 'multitext':
+            items = ''
+            for content in resp_msg:
+                items += config.MultiItemTpl % (
+                    content['title'], content['description'],
+                    content['picurl'], content['url'])
+            return config.MultiTextTpl % (self.from_user, self.to_user,
+                                          curr_timestamp, len(resp_msg), items)
 
     def _subscribe(self):
         if self.redis.sismember("wx_user:list", self.from_user):
@@ -121,7 +129,16 @@ class EventMsg(object):
             return '客户端未接入互联网或者已断线', 'text'
 
     def _click_humtem(self):
-        return 'hum tem', 'text'
+        res = []
+        res.append(
+            {
+                "title": "温度湿度",
+                "description": "4月21号 25℃ 40%\n4月20号 26℃ 42%\n",
+                "picurl": "",
+                "url": "http://sun.codemagic.tk/test/chart",
+            }
+        )
+        return res, 'multitext'
 
     def _click_mydevice(self, device_id):
         return '您的设备id为%s' % device_id, 'text'
