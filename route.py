@@ -5,6 +5,7 @@ import handler
 
 urls = [
     (r'/', handler.index.IndexHandler),
+    (r'/error/(\d+)', handler.index.ErrorHandler)
     (r'/weixin', handler.weixin.WechatHandler),
     (r'/weixin/oauth', handler.oauth.OauthHandler),
     (r'/weixin/auth', handler.oauth.AuthHandler),

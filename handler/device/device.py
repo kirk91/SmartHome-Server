@@ -20,8 +20,6 @@ class DeviceHandler(tornado.web.RequestHandler):
         sensor_type = int(self.get_argument('type', 0))
         sensors = self.manager.get_all_sensors(device_id, sensor_type)
         logging.info(sensors)
-
-
         self.render('sensors.html', device_id=device_id, sensors=sensors)
 
     def put(self, device_id):

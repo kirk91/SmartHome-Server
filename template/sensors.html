@@ -12,6 +12,7 @@
 <div class="container">
     <div class="row clearfix">
         <div class="col-md-12 column">
+        {% if sensors %}
             <ul class="nav nav-pills nav-stacked">
                 {% for sid, sinfo in sensors.items() %}
                 <li><a href="/device/{{ device_id }}/sensor/{{ sid }}" class="list-group-item">
@@ -26,6 +27,9 @@
                 </a></li>
                 {% end %}
             </ul>
+        {% else %}
+        <h3>您还没有添加任何传感器</h3>
+        {% end %}
         </div>
     </div>
 </div>
