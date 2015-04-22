@@ -45,7 +45,9 @@ class AuthHandler(tornado.web.RequestHandler):
                     )
                 u_openid = res['openid']
                 uid = int(r.hget("wx_user:%s" % u_openid, 'uid'))
+                logging.info(uid)
                 device_id = int(r.hget("user:%s" % uid, "device_id"))
-                self.redirect('/device/{}'.format(device_id))
+                logging.info(device_id)
+                self.redirect('/device/%s' % device_id)
         else:
             self.write('授权失败，请重新授权')
