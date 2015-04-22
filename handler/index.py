@@ -17,3 +17,11 @@ class ErrorHandler(tornado.web.RequestHandler):
         else:
             content = '未知错误'
         self.render('error.html', content=content)
+
+
+class Testhandler(tornado.web.RequestHandler):
+    '''
+    '''
+
+    def get(self):
+        self.render('test/test.html')

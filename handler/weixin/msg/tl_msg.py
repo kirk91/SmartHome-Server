@@ -33,6 +33,7 @@ class TlMsg(object):
         api_url = '%s?key=%s&info=%s&userid=%s' % (
             config.tuling_robot_api, config.tuling_robot_key,
             self.info, self.userid)
+        logging.info(api_url)
         resp = self.curl.get(api_url)
         logging.info('receive %s from tuling_robot' % (resp))
         self.msg = json.loads(resp)
