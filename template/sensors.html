@@ -4,36 +4,92 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>传感器列表</title>
+    <title>设备列表</title>
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-switch.css">
+    <style type="text/css">
+        .radius_border {
+            border: 1px solid #cccccc;
+            border-radius: 15px;
+            margin-top: 10%;
+            margin-left: 0.5%;
+            margin-right: 0.5%;
+            padding-bottom: 5%;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <div class="row clearfix">
+
+    <div class="row clearfix radius_border">
         <div class="col-md-12 column">
-        {% if sensors %}
-            <ul class="nav nav-pills nav-stacked">
-                {% for sid, sinfo in sensors.items() %}
-                <li><a href="/device/{{ device_id }}/sensor/{{ sid }}" class="list-group-item">
-                    {% set stype=sinfo['type'] %}
-                    {% if stype == 3 %}
-                        温度湿度传感器设备{{ sid }}
-                    {% elif stype == 4 %}
-                        电灯设备{{ sid }}
-                    {% else %}
-                        未知设备{{ sid }}
-                    {% end %}
-                </a></li>
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <h3 class="text-center">
+                        温度湿度
+                    </h3>
+                    <hr>
+                </div>
+                {% for sensor in humtem_sensors %}
+                {% set hum, tem = sensor['value'].split(',') %}
+                <div class="col-md-12 column">
+                    <div class="row clearfix" style="margin-left:1%">
+                        <div class="col-xs-3 column text-left">
+                            <h4>{{ sensor['tag'] }}</h4>
+                        </div>
+                        <div class="col-xs-8 column text-left">
+                            <h4>温度 {{ tem }}℃ 湿度 {{ hum }}%</h4><br>
+                            <a href="/device/{{device_id}}/sensor/{{sensor['id']}}">温度湿度折线图</a>
+                        </div>
+                    </div>
+                </div>
                 {% end %}
-            </ul>
-        {% else %}
-        <h3>您还没有添加任何传感器</h3>
-        {% end %}
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix radius_border">
+        <div class="col-md-12 column">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <h3 class="text-center">
+                        智能开关
+                    </h3>
+                    <hr>
+                </div>
+                {% for sensor in led_sensors %}
+                {% set value = int(sensor['value']) %}
+                <div class="col-md-12 column">
+                    <div class="row clearfix" style="margin-left: 1%;margin-bottom: 2%;">
+                        <div class="col-xs-3 column text-left">
+                            <h4>{{ sensor['tag'] }}</h4>
+                        </div>
+                        <div class="col-xs-7 column text-right" style="">
+                            <input type="checkbox" id="{{ sensor['id'] }}" {% if value==1 %} checked {% end %}>
+                        </div>
+                    </div>
+                </div>
+                {% end %}
+            </div>
         </div>
     </div>
 </div>
-<script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-<script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/bootstrap-switch.js"></script>
+<script type="text/javascript">
+    {% for sensor in led_sensors %}
+        {% set id = sensor['id'] %}
+        $('#{{ id }}').bootstrapSwitch();
+        $('#{{ id }}').on('switchChange.bootstrapSwitch', function(event, state) {
+  console.log(this); // DOM element
+  console.log(event); // jQuery event
+  console.log(state); // true | false
+});
+        {% end %}
+    $("[name='my-checkbox']").bootstrapSwitch();
+</script>
 </body>
 </html>
+

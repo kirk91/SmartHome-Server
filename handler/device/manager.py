@@ -14,44 +14,42 @@ from .. import config
 class DeviceManager(object):
     '''DeviceManger
     '''
-    def __init__(self):
+    def __init__(self, device_id):
         self.rconn = \
             redis.Redis(
                 host=config.redis_host, port=config.redis_port,
                 db=config.redis_db
             )
-        self._init_devices()
+        self._init_device(device_id)
         self._init_sensors()
 
-    def _init_devices(self):
-        self.devices = self.rconn.smembers("device:list")
+    def _init_device(self, device_id):
+        devices = self.rconn.smembers("device:list")
+        if device_id in devices:
+            self.device_id = device_id
+        else:
+            raise AssertionError  # device_id不存在
 
     def _init_sensors(self):
-        if not self.rconn.exists("sensors"):
-            self.rconn.set("sensors", pickle.dumps(dict()))
-        self.sensors = pickle.loads(self.rconn.get("sensors"))
+        if not self.rconn.exists("%s:sensors" % self.device_id):
+            self.rconn.set("%s:sensors" % self.device_id, pickle.dumps(dict()))
+        self.sensors = pickle.loads(self.rconn.get("%s:sensors" % self.device_id))
 
     def _retrieve_sensors(self):
-        self.rconn.set("sensors", pickle.dumps(self.sensors))
+        self.rconn.set("%s:sensors" % self.device_id, pickle.dumps(self.sensors))
 
-    def update_device(self, device_id, sensor_info):
-        logging.info('update device %s sensor %r', device_id, sensor_info)
-        if device_id not in self.sensors:
-            self.sensors[str(device_id)] = dict()
-
+    def update_device(self,sensor_info):
+        logging.info('update device %s sensor %r', self.device_id, sensor_info)
         sensor_id = sensor_info['id']
         sensor_type = sensor_info['type']
-        self.sensors[str(device_id)].update(
-            {str(sensor_id): {'type': sensor_type}}
-        )
+        self.sensors.update({str(sensor_id): {'type': sensor_type}})
         self._retrieve_sensors()
 
-    def get_all_sensors(self, device_id, sensor_type):
-        sensors = self.sensors.get(device_id)
+    def get_all_sensors(self,sensor_type):
         if sensor_type == 0:
-            return sensors
+            return self.sensors
         res = dict()
-        for sensor_id, sensor_info in sensors.items():
+        for sensor_id, sensor_info in self.sensors.items():
             if sensor_info['type'] == sensor_type:
                 res.update({sensor_id: sensor_info})
         return res
@@ -60,28 +58,29 @@ class DeviceManager(object):
 class SensorManager(object):
     '''SensorManager
     '''
-    def __init__(self):
+    def __init__(self, device_id, sensor_id):
         self.rconn = \
             redis.Redis(
                 host=config.redis_host,
                 port=config.redis_port,
                 db=config.redis_db
             )
-        self._init_sensors()
+        self.device_id = device_id
+        self.sensor_id = sensor_id
+        self._init_sensor(device_id, sensor_id)
 
-    def _init_sensors(self):
-        if not self.rconn.exists("sensors"):
-            self.rconn.set("sensors", pickle.dumps(dict()))
-        self.sensors = pickle.loads(self.rconn.get("sensors"))
 
-    def get_sensor_type(self, device_id, sensor_id):
-        return self.sensors[device_id][sensor_id]['type']
+    def _init_sensor(self, device_id, sensor_id):
+        sensors = pickle.loads(self.rconn.get("%s:sensors" % device_id))
+        self.sensor = sensors[str(sensor_id)]
 
-    def retrieve_sensor_data(self, device_id, sensor_id, value):
-        # 当前主要用来存储温度湿度
-        # value hum,tem
+    def get_sensor_type(self):
+        return self.sensor['type']
+
+    def retrieve_sensor_data(self, value):
         timestamp = time.time()
-        self.rconn.hset("data:{}:{}".format(device_id, sensor_id),
+        self.rconn.hset(
+            "sensor:data:{}:{}".format(self.device_id, self.sensor_id),
                         value, timestamp
-                        )
+        )
 

@@ -13,14 +13,37 @@ class DeviceHandler(tornado.web.RequestHandler):
     '''
     def __init__(self, *args, **kwargs):
         super(DeviceHandler, self).__init__(*args, **kwargs)
-        self.manager = DeviceManager()
 
 
     def get(self, device_id):
         sensor_type = int(self.get_argument('type', 0))
-        sensors = self.manager.get_all_sensors(device_id, sensor_type)
+        device_manager = DeviceManager(device_id)
+        sensors = device_manager.get_all_sensors(sensor_type)
         logging.info(sensors)
-        self.render('sensors.html', device_id=device_id, sensors=sensors)
+
+        humtem_sensors = []
+        led_sensors = []
+        for sid, sinfo in sensors.items():
+            stype = sinfo['type']
+            if stype == 3:
+                humtem_sensors.append(
+                    {
+                        "id": sid,
+                        "tag": "Home",
+                        "value": "50,23"
+                    }
+                )
+            elif stype == 4:
+                led_sensors.append(
+                    {
+                        "id": sid,
+                        "tag": "电灯",
+                        "value": "1"
+                    }
+                )
+
+        self.render('sensors.html', device_id=device_id, humtem_sensors=humtem_sensors,
+                    led_sensors=led_sensors)
 
     def put(self, device_id):
         logging.info('receive device info: %r', self.request.body)
@@ -28,5 +51,6 @@ class DeviceHandler(tornado.web.RequestHandler):
         sensor_id, sensor_type = \
             data['sensor_id'], data['sensor_type']
         sensor_info = {'id': sensor_id, 'type': sensor_type}
-        self.manager.update_device(device_id, sensor_info)
+        device_manager = DeviceManager(device_id)
+        device_manager.update_device(sensor_info)
         self.write('update device info')

@@ -31,10 +31,11 @@ class SensorHandler(tornado.web.RequestHandler):
                 port=config.redis_port,
                 db=config.redis_db
             )
-        self.manager = SensorManager()
+
 
     def get(self, device_id, sensor_id):
-        sensor_type = self.manager.get_sensor_type(device_id, sensor_id)
+        sensor_manager = SensorManager(device_id, sensor_id)
+        sensor_type = sensor_manager.get_sensor_type()
         if sensor_type == 4:
             self.render('sensor_led.html', title='led',
                         sensor_id=sensor_id,)
@@ -47,7 +48,7 @@ class SensorHandler(tornado.web.RequestHandler):
         data = json.loads(self.request.data)
         value = data['value']
         if sensor_type == 4:
-            self.manager.retrieve_sensor_data(device_id, sensor_id, value)
+            self.manager.retrieve_sensor_data( value)
         elif sensor_type == 3:
             command = \
                 {'device_id': device_id,
