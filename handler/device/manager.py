@@ -1,6 +1,7 @@
 # coding:utf-8
 
 import redis
+
 try:
     import cPickle as pickle
 except:
@@ -14,6 +15,7 @@ from .. import config
 class DeviceManager(object):
     '''DeviceManger
     '''
+
     def __init__(self, device_id):
         self.rconn = \
             redis.Redis(
@@ -38,14 +40,14 @@ class DeviceManager(object):
     def _retrieve_sensors(self):
         self.rconn.set("%s:sensors" % self.device_id, pickle.dumps(self.sensors))
 
-    def update_device(self,sensor_info):
+    def update_device(self, sensor_info):
         logging.info('update device %s sensor %r', self.device_id, sensor_info)
         sensor_id = sensor_info['id']
         sensor_type = sensor_info['type']
         self.sensors.update({str(sensor_id): {'type': sensor_type}})
         self._retrieve_sensors()
 
-    def get_all_sensors(self,sensor_type):
+    def get_all_sensors(self, sensor_type):
         if sensor_type == 0:
             return self.sensors
         res = dict()
@@ -58,6 +60,9 @@ class DeviceManager(object):
 class SensorManager(object):
     '''SensorManager
     '''
+    HUMTEM_TYPE = 3
+    LED_TYPE = 4
+
     def __init__(self, device_id, sensor_id):
         self.rconn = \
             redis.Redis(
@@ -73,14 +78,38 @@ class SensorManager(object):
     def _init_sensor(self, device_id, sensor_id):
         sensors = pickle.loads(self.rconn.get("%s:sensors" % device_id))
         self.sensor = sensors[str(sensor_id)]
+        self.sensor_type = self.sensor['type']
 
     def get_sensor_type(self):
         return self.sensor['type']
 
-    def retrieve_sensor_data(self, value):
-        timestamp = time.time()
-        self.rconn.hset(
-            "sensor:data:{}:{}".format(self.device_id, self.sensor_id),
-                        value, timestamp
-        )
+    def retrieve_sensor_data(self, *args, **kwargs):
+        sensor_type = self.sensor_type
+        if sensor_type == self.HUMTEM_TYPE:
+            value = self.rconn.get("sensor:data:{0}:{1}".format(self.device_id, self.sensor_id))
+            return value
+        elif sensor_type == self.LED_TYPE:
+            value = self.rconn.get("sensor:data:{0}:{1}".format(self.device_id, self.sensor_id))
+            if not value:
+                value = 0
+            return int(value)
+
+
+    def update_sensor_data(self, value):
+        sensor_type = self.sensor_type
+        if sensor_type == self.HUMTEM_TYPE:
+            timestamp = time.time()
+            self.rconn.hset(
+                "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id),
+                value, timestamp
+            )
+        elif sensor_type == self.LED_TYPE:
+            if int(value) > 0:
+                value = 1
+            else:
+                value = 0
+            self.rconn.set("sensor:data:{0}:{1}".format(self.device_id, self.sensor_id),
+                           value)
+
+
 

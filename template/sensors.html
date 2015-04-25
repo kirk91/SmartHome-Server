@@ -79,14 +79,38 @@
 <script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/bootstrap-switch.js"></script>
 <script type="text/javascript">
+    device_id = {{ device_id }}
+    function switch_light(event, state){
+        sensor_id = this.id;
+        if(state){
+            value = 1;
+        }else{
+            value = 0;
+        }
+        url = "/device/" + device_id + "/sensor/" + sensor_id;
+        var data = {
+            value: value
+        }
+        data = JSON.stringify(data);
+        $.ajax({
+            type: "PUT",
+            url: url,
+            contentType: "application/json; charset=utf-8",
+            data: data,
+            dataType: "json",
+            success: function (msg, status, xhr) {
+
+            },
+            error: function (msg) {
+
+            }
+        });
+    }
+
     {% for sensor in led_sensors %}
         {% set id = sensor['id'] %}
         $('#{{ id }}').bootstrapSwitch();
-        $('#{{ id }}').on('switchChange.bootstrapSwitch', function(event, state) {
-  console.log(this); // DOM element
-  console.log(event); // jQuery event
-  console.log(state); // true | false
-});
+        $('#{{ id }}').on('switchChange.bootstrapSwitch', switch_light);
         {% end %}
     $("[name='my-checkbox']").bootstrapSwitch();
 </script>

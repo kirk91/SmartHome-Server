@@ -5,7 +5,9 @@ import tornado.web
 import json
 import logging
 
-from .manager import DeviceManager
+from .. import config
+from .manager import DeviceManager, SensorManager
+
 
 
 class DeviceHandler(tornado.web.RequestHandler):
@@ -25,7 +27,8 @@ class DeviceHandler(tornado.web.RequestHandler):
         led_sensors = []
         for sid, sinfo in sensors.items():
             stype = sinfo['type']
-            if stype == 3:
+            sensor_manager = SensorManager(device_id, sid)
+            if stype == sensor_manager.HUMTEM_TYPE:
                 humtem_sensors.append(
                     {
                         "id": sid,
@@ -33,12 +36,13 @@ class DeviceHandler(tornado.web.RequestHandler):
                         "value": "50,23"
                     }
                 )
-            elif stype == 4:
+            elif stype == sensor_manager.LED_TYPE:
+                value = sensor_manager.retrieve_sensor_data()
                 led_sensors.append(
                     {
                         "id": sid,
                         "tag": "电灯",
-                        "value": "1"
+                        "value": value
                     }
                 )
 
