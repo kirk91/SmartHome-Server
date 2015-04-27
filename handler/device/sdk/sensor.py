@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from ..manager import DeviceManger, SensorManager
+from ..manager import DeviceManager, SensorManager
 
 
 class Sensor(object):
@@ -11,7 +11,7 @@ class Sensor(object):
         self._init_sensors(device_id)
 
     def _init_sensors(self, device_id):
-        device_manager = DeviceManger(device_id)
+        device_manager = DeviceManager(device_id)
         self.sensors = \
             device_manager.get_all_sensors(SensorManager.HUMTEM_TYPE)
 

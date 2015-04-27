@@ -115,7 +115,7 @@ class SensorManager(object):
     def retrieve_sensor_data(self, recent=0):
         sensor_type = self.sensor_type
         if sensor_type == self.HUMTEM_TYPE:
-            self._retrieve_hum_tem_data(recent)
+            return self._retrieve_hum_tem_data(recent)
         elif sensor_type == self.LED_TYPE:
             value = self.rconn.get(
                 "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id))
