@@ -4,6 +4,7 @@ import tornado.web
 import redis
 import json
 import rpyc
+import datetime
 
 from .. import config
 from .manager import SensorManager
@@ -37,24 +38,47 @@ class SensorHandler(tornado.web.RequestHandler):
         sensor_manager = SensorManager(device_id, sensor_id)
         sensor_type = sensor_manager.get_sensor_type()
         if sensor_type == sensor_manager.LED_TYPE:
-            # self.render('sensor_led.html', title='led',
-            # sensor_id=sensor_id,)
             value = sensor_manager.retrieve_sensor_data()
             data = {"id": sensor_id, "type": sensor_type, "value": value}
             self.write(json.dumps(data))
         elif sensor_type == sensor_manager.HUMTEM_TYPE:
+            values = sensor_manager.retrieve_sensor_data(recent=False)
+            hum_values = []
+            tem_values = []
+            now_hour = int(datetime.datetime.now().hour)
+            labels = []
+            for i in range(now_hour+1, 24):
+                labels.append(i)
+            for i in range(0, now_hour+1):
+                labels.append(i)
+
+            for value in values:
+                if value:
+                    tem, hum = value.split(',')
+                    tem_values.append(int(tem))
+                    hum_values.append(int(hum))
+                else:
+                    tem_values.append(0)
+                    hum_values.append(0)
+            print labels
+            print hum_values
+            print tem_values
             self.render('sensor_tem.html', title='humtem',
-                        sensor_id=sensor_id, )
+                        sensor_id=sensor_id,
+                        tem_data=tem_values,
+                        hum_data=hum_values,
+                        labels=labels)
 
     def put(self, device_id, sensor_id):
         sensor_manager = SensorManager(device_id, sensor_id)
         sensor_type = sensor_manager.get_sensor_type()
         data = json.loads(self.request.body)
-        value = int(data['value'])
+        value = data['value']
         sensor_manager.update_sensor_data(value)
         if sensor_type == sensor_manager.HUMTEM_TYPE:
-            pass
+            self.write('Update sensor success')
         elif sensor_type == sensor_manager.LED_TYPE:
+            value = int(value)
             if value > 0:
                 value = 1
             else:

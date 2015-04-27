@@ -52,32 +52,26 @@
     //This will get the first returned node in the jQuery collection.
     var hum_chart = new Chart(hum_ctx);
     var tem_chart = new Chart(tem_ctx);
-    var data = {
-        labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    var hum_data = {
+        labels: {{ labels }},
         datasets: [
             {
                 strokeColor: "rgba(151,187,205,1)",
                 pointColor: "rgba(151,187,205,1)",
                 pointStrokeColor: "white",
-                data: [10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+                data: {{ hum_data }}
             }
         ]
     }
     var tem_data = {
-        labels: [
-            19, 20, 21, 22, 23, 00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14,
-            15, 16, 17, 18, 19
-        ],
+        labels: {{ labels}},
         datasets: [
             {
 
                 strokeColor: "rgba(151,187,205,1)",
                 pointColor: "rgba(151,187,205,1)",
                 pointStrokeColor: "white",
-                data: [
-                    17, 15, 15, 14, 13, 13, 12, 12, 11, 11, 11, 11, 12, 15, 17, 20, 21, 23, 24, 24,
-                    24, 24, 22, 20, 19
-                ]
+                data: {{ tem_data }}
             }
         ]
     }
@@ -87,7 +81,7 @@
         tooltipTemplate: "<%= value %>"
 
     }
-    hum_chart.Line(data, options);
+    hum_chart.Line(hum_data, options);
     tem_chart.Line(tem_data, options);
 </script>
 </body>

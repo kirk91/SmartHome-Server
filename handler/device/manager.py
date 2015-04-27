@@ -8,6 +8,7 @@ except:
     import pickle
 import logging
 import time
+import datetime
 
 from .. import config
 
@@ -83,11 +84,40 @@ class SensorManager(object):
     def get_sensor_type(self):
         return self.sensor['type']
 
-    def retrieve_sensor_data(self, *args, **kwargs):
+    def retrieve_sensor_data(self, recent=True):
         sensor_type = self.sensor_type
         if sensor_type == self.HUMTEM_TYPE:
-            value = self.rconn.get("sensor:data:{0}:{1}".format(self.device_id, self.sensor_id))
-            return value
+            if recent:
+                now = datetime.datetime.now()
+                start = (now - datetime.timedelta(minutes=6)).timetuple()
+                end = now.timetuple()
+                name = "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id)
+                min = int(time.mktime(start))
+                max = int(time.mktime(end))
+                value = self.rconn.zrangebyscore(name, min, max)
+                if value:
+                    return value[-1].split('-')[1]
+                else:
+                    return None
+            else:
+                # 获取最近24个小时整点数据
+                now = datetime.datetime.now()
+                name = "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id)
+                values = []
+                for i in range(24):
+                    delta = 60 * i
+                    start = (now-datetime.timedelta(minutes=delta+5)).timetuple()
+                    end = (now-datetime.timedelta(minutes=delta-5)).timetuple()
+                    min = int(time.mktime(start))
+                    max = int(time.mktime(end))
+                    value = self.rconn.zrangebyscore(name, min, max)
+                    if value:
+                        values.append(value[-1].split('-')[1])
+                    else:
+                        values.append(None)
+                values.reverse()
+                return values
+
         elif sensor_type == self.LED_TYPE:
             value = self.rconn.get("sensor:data:{0}:{1}".format(self.device_id, self.sensor_id))
             if not value:
@@ -98,10 +128,10 @@ class SensorManager(object):
     def update_sensor_data(self, value):
         sensor_type = self.sensor_type
         if sensor_type == self.HUMTEM_TYPE:
-            timestamp = time.time()
-            self.rconn.hset(
+            timestamp = int(time.time())
+            self.rconn.zadd(
                 "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id),
-                value, timestamp
+                "%s-%s" % (timestamp, value), timestamp
             )
         elif sensor_type == self.LED_TYPE:
             if int(value) > 0:

@@ -29,11 +29,12 @@ class DeviceHandler(tornado.web.RequestHandler):
             stype = sinfo['type']
             sensor_manager = SensorManager(device_id, sid)
             if stype == sensor_manager.HUMTEM_TYPE:
+                value = sensor_manager.retrieve_sensor_data()   # 温度，湿度
                 humtem_sensors.append(
                     {
                         "id": sid,
                         "tag": "Home",
-                        "value": "50,23"
+                        "value": value
                     }
                 )
             elif stype == sensor_manager.LED_TYPE:
