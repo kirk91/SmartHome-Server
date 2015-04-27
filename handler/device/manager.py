@@ -14,6 +14,7 @@ from .. import config
 
 
 class DeviceManager(object):
+
     '''DeviceManger
     '''
 
@@ -36,17 +37,19 @@ class DeviceManager(object):
     def _init_sensors(self):
         if not self.rconn.exists("%s:sensors" % self.device_id):
             self.rconn.set("%s:sensors" % self.device_id, pickle.dumps(dict()))
-        self.sensors = pickle.loads(self.rconn.get("%s:sensors" % self.device_id))
+        self.sensors = pickle.loads(
+            self.rconn.get("%s:sensors" % self.device_id))
 
-    def _retrieve_sensors(self):
-        self.rconn.set("%s:sensors" % self.device_id, pickle.dumps(self.sensors))
+    def _persist_sensors(self):
+        self.rconn.set("%s:sensors" %
+                       self.device_id, pickle.dumps(self.sensors))
 
     def update_device(self, sensor_info):
         logging.info('update device %s sensor %r', self.device_id, sensor_info)
         sensor_id = sensor_info['id']
         sensor_type = sensor_info['type']
         self.sensors.update({str(sensor_id): {'type': sensor_type}})
-        self._retrieve_sensors()
+        self._persist_sensors()
 
     def get_all_sensors(self, sensor_type):
         if sensor_type == 0:
@@ -59,6 +62,7 @@ class DeviceManager(object):
 
 
 class SensorManager(object):
+
     '''SensorManager
     '''
     HUMTEM_TYPE = 3
@@ -75,7 +79,6 @@ class SensorManager(object):
         self.sensor_id = sensor_id
         self._init_sensor(device_id, sensor_id)
 
-
     def _init_sensor(self, device_id, sensor_id):
         sensors = pickle.loads(self.rconn.get("%s:sensors" % device_id))
         self.sensor = sensors[str(sensor_id)]
@@ -84,46 +87,41 @@ class SensorManager(object):
     def get_sensor_type(self):
         return self.sensor['type']
 
-    def retrieve_sensor_data(self, recent=True):
+    def _retrieve_hum_tem_data(self, recent):
+        ''' 获取最近{{ recent }}个小时对应点数据
+        '''
+        now = datetime.datetime.now()
+        name = \
+            "sensor:data:{0}:{1}".format(
+                self.device_id, self.sensor_id)
+        values = []
+        for i in range(recent + 1):
+            delta = 60 * i
+            start = \
+                (now - datetime.timedelta(minutes=delta + 5)).timetuple()
+            end =\
+                (now - datetime.timedelta(minutes=delta - 5)).timetuple()
+            start_timestamp = int(time.mktime(start))
+            end_timestamp = int(time.mktime(end))
+            value = \
+                self.rconn.zrangebyscore(name, start_timestamp, end_timestamp)
+            if value:
+                values.append(value[-1].split('-')[1])
+            else:
+                values.append(None)
+        values.reverse()
+        return values
+
+    def retrieve_sensor_data(self, recent=0):
         sensor_type = self.sensor_type
         if sensor_type == self.HUMTEM_TYPE:
-            if recent:
-                now = datetime.datetime.now()
-                start = (now - datetime.timedelta(minutes=6)).timetuple()
-                end = now.timetuple()
-                name = "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id)
-                min = int(time.mktime(start))
-                max = int(time.mktime(end))
-                value = self.rconn.zrangebyscore(name, min, max)
-                if value:
-                    return value[-1].split('-')[1]
-                else:
-                    return None
-            else:
-                # 获取最近24个小时整点数据
-                now = datetime.datetime.now()
-                name = "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id)
-                values = []
-                for i in range(24):
-                    delta = 60 * i
-                    start = (now-datetime.timedelta(minutes=delta+5)).timetuple()
-                    end = (now-datetime.timedelta(minutes=delta-5)).timetuple()
-                    min = int(time.mktime(start))
-                    max = int(time.mktime(end))
-                    value = self.rconn.zrangebyscore(name, min, max)
-                    if value:
-                        values.append(value[-1].split('-')[1])
-                    else:
-                        values.append(None)
-                values.reverse()
-                return values
-
+            self._retrieve_hum_tem_data(recent)
         elif sensor_type == self.LED_TYPE:
-            value = self.rconn.get("sensor:data:{0}:{1}".format(self.device_id, self.sensor_id))
+            value = self.rconn.get(
+                "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id))
             if not value:
                 value = 0
             return int(value)
-
 
     def update_sensor_data(self, value):
         sensor_type = self.sensor_type
@@ -138,8 +136,6 @@ class SensorManager(object):
                 value = 1
             else:
                 value = 0
-            self.rconn.set("sensor:data:{0}:{1}".format(self.device_id, self.sensor_id),
-                           value)
-
-
-
+            self.rconn.set(
+                "sensor:data:{0}:{1}".format(self.device_id, self.sensor_id),
+                value)

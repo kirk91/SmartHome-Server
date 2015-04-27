@@ -29,19 +29,9 @@
           "key": "BIND"
         },
         {
-          "type": "click",
-          "name": "我的设备",
-          "key": "MY_DEVICE"
-        },
-        {
           "type": "view",
           "name": "查看所有",
           "url": "http://sun.codemagic.tk/weixin/oauth"
-        },
-        {
-          "type": "view",
-          "name": "测试",
-          "url": "http://sun.codemagic.tk/test"
         }
       ]
     }

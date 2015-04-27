@@ -8,6 +8,7 @@ import json
 import logging
 
 from ... import config
+from ...device.sdk import sensor # noqa
 
 
 class EventMsg(object):

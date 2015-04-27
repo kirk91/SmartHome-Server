@@ -11,6 +11,7 @@ from .manager import SensorManager
 
 
 class Sensor(object):
+
     '''
     '''
     SENSOR_HUM = 1
@@ -20,6 +21,7 @@ class Sensor(object):
 
 
 class SensorHandler(tornado.web.RequestHandler):
+
     '''SensorDataHandler
     传感器数据的控制中心
     '''
@@ -33,7 +35,6 @@ class SensorHandler(tornado.web.RequestHandler):
                 db=config.redis_db
             )
 
-
     def get(self, device_id, sensor_id):
         sensor_manager = SensorManager(device_id, sensor_id)
         sensor_type = sensor_manager.get_sensor_type()
@@ -42,14 +43,14 @@ class SensorHandler(tornado.web.RequestHandler):
             data = {"id": sensor_id, "type": sensor_type, "value": value}
             self.write(json.dumps(data))
         elif sensor_type == sensor_manager.HUMTEM_TYPE:
-            values = sensor_manager.retrieve_sensor_data(recent=False)
+            values = sensor_manager.retrieve_sensor_data(recent=24)
             hum_values = []
             tem_values = []
             now_hour = int(datetime.datetime.now().hour)
             labels = []
-            for i in range(now_hour+1, 24):
+            for i in range(now_hour + 1, 24):
                 labels.append(i)
-            for i in range(0, now_hour+1):
+            for i in range(0, now_hour + 1):
                 labels.append(i)
 
             for value in values:
@@ -60,9 +61,6 @@ class SensorHandler(tornado.web.RequestHandler):
                 else:
                     tem_values.append(0)
                     hum_values.append(0)
-            print labels
-            print hum_values
-            print tem_values
             self.render('sensor_tem.html', title='humtem',
                         sensor_id=sensor_id,
                         tem_data=tem_values,
@@ -83,12 +81,12 @@ class SensorHandler(tornado.web.RequestHandler):
                 value = 1
             else:
                 value = 0
-            # command = \
-            #     {'device_id': device_id,
-            #      'sensor_id': sensor_id,  # 0表示开启所有的led
-            #      'value': value}
-            #
-            # conn = rpyc.connect('127.0.0.1', 8889)
-            # conn.root.handle_msg(json.dumps(command))
-            # conn.close()
+            command = \
+                {'device_id': device_id,
+                 'sensor_id': sensor_id,  # 0表示开启所有的led
+                 'value': value}
+
+            conn = rpyc.connect('127.0.0.1', 8889)
+            conn.root.handle_msg(json.dumps(command))
+            conn.close()
             self.write('Update sensor success')

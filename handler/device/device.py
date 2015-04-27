@@ -5,17 +5,16 @@ import tornado.web
 import json
 import logging
 
-from .. import config
 from .manager import DeviceManager, SensorManager
 
 
-
 class DeviceHandler(tornado.web.RequestHandler):
+
     '''DeviceHandler
     '''
+
     def __init__(self, *args, **kwargs):
         super(DeviceHandler, self).__init__(*args, **kwargs)
-
 
     def get(self, device_id):
         sensor_type = int(self.get_argument('type', 0))
@@ -29,7 +28,7 @@ class DeviceHandler(tornado.web.RequestHandler):
             stype = sinfo['type']
             sensor_manager = SensorManager(device_id, sid)
             if stype == sensor_manager.HUMTEM_TYPE:
-                value = sensor_manager.retrieve_sensor_data()   # 温度，湿度
+                value = sensor_manager.retrieve_sensor_data()[0]   # 温度，湿度
                 humtem_sensors.append(
                     {
                         "id": sid,
@@ -47,8 +46,10 @@ class DeviceHandler(tornado.web.RequestHandler):
                     }
                 )
 
-        self.render('sensors.html', device_id=device_id, humtem_sensors=humtem_sensors,
-                    led_sensors=led_sensors)
+        self.render(
+            'sensors.html', device_id=device_id,
+            humtem_sensors=humtem_sensors,
+            led_sensors=led_sensors)
 
     def put(self, device_id):
         logging.info('receive device info: %r', self.request.body)
