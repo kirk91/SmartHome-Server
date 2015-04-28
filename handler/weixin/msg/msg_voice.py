@@ -28,7 +28,7 @@ class VoiceMsg(object):
         self.msg = msg
         self.to_user = msg.get('ToUserName')
         self.from_user = msg.get('FromUserName')
-        self.content = msg.get('Recognition')
+        self.content = msg.get('Recognition').encode('utf-8')
 
     def handle(self):
         logging.info('Content: %r', self.content)
@@ -37,7 +37,6 @@ class VoiceMsg(object):
             device_id = int(self.redis.hget("user:%d" % uid, "device_id"))
         else:
             device_id = None
-
         if self.TEM_COMMAND in self.content or \
                 self.HUM_COMMAND in self.content:
             resp_msg, resp_msg_type = self._handle_hum_tem_msg(device_id)
