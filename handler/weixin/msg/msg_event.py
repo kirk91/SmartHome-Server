@@ -187,7 +187,7 @@ class EventMsg(object):
             return ('您还为绑定家居客户端，请先绑定', BaseMsg.TEXT_PLAIN)
 
     def _view(self):
-        pass
+        return '', BaseMsg.TEXT_PLAIN
 
     def _location(self):
         pass
