@@ -143,8 +143,11 @@ class EventMsg(object):
         h = int(datetime.datetime.now().hour)
         description = ''
         for value in values:
-            tem, hum = value.split(',')
-            description += '%s点 温度 %s℃ 湿度 %s%%\n' % (h, tem, hum)
+            if value:
+                tem, hum = value.split(',')
+                description += '%s点 温度 %s℃ 湿度 %s%%\n' % (h, tem, hum)
+            else:
+                description += "%s点 暂无温度湿度数据\n" % (h,)
             h -= 1
             if h == -1:
                 h = 23
