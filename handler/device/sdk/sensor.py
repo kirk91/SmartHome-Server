@@ -14,11 +14,11 @@ class Sensor(object):
         device_manager = DeviceManager(device_id)
         self.sensors = \
             device_manager.get_all_sensors(SensorManager.HUMTEM_TYPE)
+        self.sensor_id = self.sensors()[0]
 
     def get(self):
         if self.sensors:
-            sensor_id = self.sensors.keys()[0]
-            manager = SensorManager(self.device_id, sensor_id)
+            manager = SensorManager(self.device_id, self.sensor_id)
             sensor_type = manager.get_sensor_type()
             if sensor_type == manager.HUMTEM_TYPE:
                 values = manager.retrieve_sensor_data(recent=5)
