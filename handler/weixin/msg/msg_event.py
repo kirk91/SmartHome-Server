@@ -39,7 +39,7 @@ class EventMsg(object):
 
         if resp_msg_type == BaseMsg.TEXT_PLAIN:
             return config.TextTpl % \
-                   (self.from_user, self.to_user, curr_timestamp, resp_msg)
+                (self.from_user, self.to_user, curr_timestamp, resp_msg)
         elif resp_msg_type == BaseMsg.TEXT_MULTI:
             items = ''
             for content in resp_msg:
@@ -149,7 +149,6 @@ class EventMsg(object):
             if h == -1:
                 h = 23
 
-
         url = "%s/device/%s/sensor/%s"\
             % (config.domain, device_id, sensor.sensor_id)
         resp.append(
@@ -171,12 +170,13 @@ class EventMsg(object):
 
         if self.redis.hexists("user:%d" % uid, "device_id"):
             device_id = int(self.redis.hget("user:%d" % uid, "device_id"))
+            logging.info('device_id: %s', device_id)
             if event_key == 'MY_DEVICE':
                 return self._click_mydevice(device_id)
             elif event_key == 'REAL_TEMPERATURE':
-                return self._click_humtem()
+                return self._click_humtem(device_id)
             elif event_key == 'LIGHT_ON' or \
-                            event_key == 'LIGHT_OFF':
+                    event_key == 'LIGHT_OFF':
                 return self._click_light(event_key, device_id)
             else:
                 return ('%s暂时还没有定义, 正在开发中...' % event_key, BaseMsg.TEXT_PLAIN)
