@@ -11,7 +11,7 @@ class Sensor(object):
         self._init_sensors(device_id)
 
     def _init_sensors(self, device_id):
-        device_manager = DeviceManager(device_id)
+        device_manager = DeviceManager(str(device_id))
         self.sensors = \
             device_manager.get_all_sensors(SensorManager.HUMTEM_TYPE)
         self.sensor_id = self.sensors()[0]
