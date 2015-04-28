@@ -29,6 +29,7 @@ class DeviceManager(object):
 
     def _init_device(self, device_id):
         devices = self.rconn.smembers("device:list")
+        logging.info("devices: %r", devices)
         if device_id in devices:
             self.device_id = device_id
         else:
