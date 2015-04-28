@@ -1,5 +1,7 @@
 # coding:utf-8
 
+import logging
+
 from ..manager import DeviceManager, SensorManager
 
 
@@ -14,6 +16,7 @@ class Sensor(object):
         device_manager = DeviceManager(str(device_id))
         self.sensors = \
             device_manager.get_all_sensors(SensorManager.HUMTEM_TYPE)
+        logging.info('sensors: %r', self.sensors)
         self.sensor_id = self.sensors().keys()[0]
 
     def get(self):
