@@ -14,7 +14,7 @@ class Sensor(object):
         device_manager = DeviceManager(str(device_id))
         self.sensors = \
             device_manager.get_all_sensors(SensorManager.HUMTEM_TYPE)
-        self.sensor_id = self.sensors()[0]
+        self.sensor_id = self.sensors().keys()[0]
 
     def get(self):
         if self.sensors:
