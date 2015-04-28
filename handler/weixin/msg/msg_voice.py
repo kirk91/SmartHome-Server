@@ -4,6 +4,7 @@ import time
 import rpyc
 import json
 import datetime
+import redis
 
 from . import tl_msg
 from ... import config
@@ -21,6 +22,8 @@ class VoiceMsg(object):
     CLOSE_COMMAND = "关"
 
     def __init__(self, msg):
+        self.redis = redis.Redis(
+            host=config.redis_host, port=config.redis_port, db=config.redis_db)
         self.msg = msg
         self.to_user = msg.get('ToUserName')
         self.from_user = msg.get('FromUserName')
