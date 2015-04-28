@@ -5,6 +5,7 @@ import rpyc
 import json
 import datetime
 import redis
+import logging
 
 from . import tl_msg
 from ... import config
@@ -30,18 +31,20 @@ class VoiceMsg(object):
         self.content = msg.get('Recognition')
 
     def handle(self):
+        logging.info('Content: %r', self.content)
         uid = int(self.redis.hget("wx_user:%s" % self.from_user, 'uid'))
         if self.redis.hexists("user:%d" % uid, "device_id"):
             device_id = int(self.redis.hget("user:%d" % uid, "device_id"))
         else:
             device_id = None
 
-        if self.TEM_COMMAND in self.msg or self.HUM_COMMAND in self.msg:
+        if self.TEM_COMMAND in self.content or \
+                self.HUM_COMMAND in self.content:
             resp_msg, resp_msg_type = self._handle_hum_tem_msg(device_id)
-        elif self.LED_COMMAND in self.msg:
-            if self.OPEN_COMMAND in self.msg:
+        elif self.LED_COMMAND in self.content:
+            if self.OPEN_COMMAND in self.content:
                 resp_msg, resp_msg_type = self._handle_led_msg(device_id, 1)
-            elif self.CLOSE_COMMAND in self.msg:
+            elif self.CLOSE_COMMAND in self.content:
                 resp_msg, resp_msg_type = self._handle_led_msg(device_id, 0)
             else:
                 resp_msg, resp_msg_type = '要关还是开呢', BaseMsg.TEXT_PLAIN
