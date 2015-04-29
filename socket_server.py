@@ -29,10 +29,11 @@ _set_logger(logger)
 class RpcService(Service):
 
     def exposed_handle_msg(self, msg):
+        logger.info('receive msg: %r', msg)
         msg_dict = json.loads(msg)
-        device_id = msg_dict['device_id']
-        sensor_id = msg_dict['sensor_id']
-        sensor_value = msg_dict['sensor_value']
+        device_id = int(msg_dict['device_id'])
+        sensor_id = int(msg_dict['sensor_id'])
+        sensor_value = int(msg_dict['sensor_value'])
         if device_id in socket_server.conns and \
                 socket_server.conns[device_id]:
             conn = socket_server.conns[device_id]
