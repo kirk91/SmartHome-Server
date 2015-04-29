@@ -48,7 +48,7 @@ class SensorHandler(tornado.web.RequestHandler):
             tem_values = []
             now_hour = int(datetime.datetime.now().hour)
             labels = []
-            for i in range(now_hour + 1, 24):
+            for i in range(now_hour, 24):
                 labels.append(i)
             for i in range(0, now_hour + 1):
                 labels.append(i)
