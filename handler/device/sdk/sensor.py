@@ -10,12 +10,13 @@ class Sensor(object):
     '''
     def __init__(self, device_id, sensor_type):
         self.device_id = device_id
+        self.sensor_type = sensor_type
         self._init_sensors(device_id)
 
     def _init_sensors(self, device_id):
         device_manager = DeviceManager(str(device_id))
         self.sensors = \
-            device_manager.get_all_sensors(SensorManager.HUMTEM_TYPE)
+            device_manager.get_all_sensors(self.sensor_type)
         logging.info('sensors: %r', self.sensors)
         if self.sensors:
             self.sensor_id = self.sensors.keys()[0]
