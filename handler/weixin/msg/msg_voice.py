@@ -99,7 +99,7 @@ class VoiceMsg(object):
         sensor_id = sensor.sensor_id
         command = {'device_id': device_id,
                    'sensor_id': sensor_id,  # 0表示开启所有的led
-                   'value': value}
+                   'sensor_value': value}
 
         conn = rpyc.connect('127.0.0.1', 8889)
         res = conn.root.handle_msg(json.dumps(command))
