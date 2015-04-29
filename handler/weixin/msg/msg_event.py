@@ -143,6 +143,7 @@ class EventMsg(object):
         if not sensor.sensor_id:
             return '您还未添加温度湿度设备', BaseMsg.TEXT_PLAIN
         values = sensor.get()
+        values.reverse()
         resp = list()
         h = int(datetime.datetime.now().hour)
         description = ''
