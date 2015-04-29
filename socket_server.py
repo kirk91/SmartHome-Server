@@ -32,13 +32,13 @@ class RpcService(Service):
         msg_dict = json.loads(msg)
         device_id = msg_dict['device_id']
         sensor_id = msg_dict['sensor_id']
-        sensor_value = msg_dict['value']
+        sensor_value = msg_dict['sensor_value']
         if device_id in socket_server.conns and \
                 socket_server.conns[device_id]:
             conn = socket_server.conns[device_id]
-            req_msg = {"device": device_id,
-                       "sensor": sensor_id,
-                       "command": sensor_value}
+            req_msg = {"device_id": device_id,
+                       "sensor_id": sensor_id,
+                       "sensor_value": sensor_value}
             try:
                 conn.send(json.dumps(req_msg))  # 这里客户端最好确认一下
                 conn.recv(2048)  # 不接收数据，会直接踢掉客户端
