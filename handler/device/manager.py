@@ -100,9 +100,9 @@ class SensorManager(object):
         for i in range(recent + 1):
             delta = 60 * i
             start = \
-                (now - datetime.timedelta(minutes=delta + 5)).timetuple()
+                (now - datetime.timedelta(minutes=delta + 6)).timetuple()
             end =\
-                (now - datetime.timedelta(minutes=delta - 5)).timetuple()
+                (now - datetime.timedelta(minutes=delta)).timetuple()
             start_timestamp = int(time.mktime(start))
             end_timestamp = int(time.mktime(end))
             value = \
@@ -112,6 +112,7 @@ class SensorManager(object):
             else:
                 values.append(None)
         values.reverse()
+        logging.info('sensor values: %r', values)
         return values
 
     def retrieve_sensor_data(self, recent=0):
