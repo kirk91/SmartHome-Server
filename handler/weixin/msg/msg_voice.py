@@ -95,7 +95,7 @@ class VoiceMsg(object):
         return resp, BaseMsg.TEXT_MULTI
 
     def _handle_led_msg(self, device_id, value):
-        sensor = Sensor(device_id)
+        sensor = Sensor(device_id, Sensor.LED_TYPE)
         sensor_id = sensor.sensor_id
         command = {'device_id': device_id,
                    'sensor_id': sensor_id,  # 0表示开启所有的led

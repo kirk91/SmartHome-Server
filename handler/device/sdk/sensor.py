@@ -8,6 +8,9 @@ from ..manager import DeviceManager, SensorManager
 class Sensor(object):
     '''Sensor sdk
     '''
+    HUM_TEM_TYPE = 3
+    LED_TYPE = 4
+
     def __init__(self, device_id, sensor_type):
         self.device_id = device_id
         self.sensor_type = sensor_type
