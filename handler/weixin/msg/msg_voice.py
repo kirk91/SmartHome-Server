@@ -67,7 +67,9 @@ class VoiceMsg(object):
         return tl_msg.TlMsg(self.from_user, self.content).get()
 
     def _handle_hum_tem_msg(self, device_id):
-        sensor = Sensor(device_id)
+        sensor = Sensor(device_id, Sensor.HUM_TEM_TYPE)  # 3 hum_tem
+        if not sensor.sensor_id:
+            return '您还未添加温度湿度设备', BaseMsg.TEXT_PLAIN
         values = sensor.get()
         resp = list()
         h = int(datetime.datetime.now().hour)
@@ -97,6 +99,8 @@ class VoiceMsg(object):
     def _handle_led_msg(self, device_id, value):
         sensor = Sensor(device_id, Sensor.LED_TYPE)
         sensor_id = sensor.sensor_id
+        if not sensor_id:
+            return '您还未添加电灯设备', BaseMsg.TEXT_PLAIN
         command = {'device_id': device_id,
                    'sensor_id': sensor_id,  # 0表示开启所有的led
                    'sensor_value': value}

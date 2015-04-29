@@ -115,6 +115,8 @@ class EventMsg(object):
     def _click_light(self, event_key, device_id):
         sensor = Sensor(device_id, Sensor.LED_TYPE)  # led 4
         sensor_id = sensor.sensor_id
+        if not sensor_id:
+            return '您还未添加电灯设备', BaseMsg.TEXT_PLAIN
         if event_key == 'LIGHT_ON':
             value = 1
         elif event_key == 'LIGHT_OFF':
