@@ -113,7 +113,7 @@ class EventMsg(object):
         return ('恭喜你已经成功绑定家居客户端', BaseMsg.TEXT_PLAIN)
 
     def _click_light(self, event_key, device_id):
-        sensor = Sensor(device_id)
+        sensor = Sensor(device_id, 4)  # led 4
         sensor_id = sensor.sensor_id
         if event_key == 'LIGHT_ON':
             value = 1
@@ -137,7 +137,9 @@ class EventMsg(object):
             return '客户端未接入互联网或者已断线', BaseMsg.TEXT_PLAIN
 
     def _click_humtem(self, device_id):
-        sensor = Sensor(device_id)
+        sensor = Sensor(device_id, 3)  # 3 hum_tem
+        if not sensor.sensor_id:
+            return '您还未添加温度湿度设备', BaseMsg.TEXT_PLAIN
         values = sensor.get()
         resp = list()
         h = int(datetime.datetime.now().hour)

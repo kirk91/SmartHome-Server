@@ -8,7 +8,7 @@ from ..manager import DeviceManager, SensorManager
 class Sensor(object):
     '''Sensor sdk
     '''
-    def __init__(self, device_id):
+    def __init__(self, device_id, sensor_type):
         self.device_id = device_id
         self._init_sensors(device_id)
 
@@ -17,7 +17,10 @@ class Sensor(object):
         self.sensors = \
             device_manager.get_all_sensors(SensorManager.HUMTEM_TYPE)
         logging.info('sensors: %r', self.sensors)
-        self.sensor_id = self.sensors.keys()[0]
+        if self.sensors:
+            self.sensor_id = self.sensors.keys()[0]
+        else:
+            self.sensor_id = None
 
     def get(self):
         if self.sensors:
