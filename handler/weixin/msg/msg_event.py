@@ -130,6 +130,7 @@ class EventMsg(object):
         conn.close()
 
         if res:
+            sensor.set(value)
             if event_key == 'LIGHT_ON':
                 resp = 'light opened'
             else:

@@ -111,6 +111,7 @@ class VoiceMsg(object):
         conn.close()
 
         if res:
+            sensor.set(value)
             if value:
                 resp = 'light opened'
             else:

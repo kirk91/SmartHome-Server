@@ -26,8 +26,16 @@ class Sensor(object):
         else:
             self.sensor_id = None
 
+    def set(self, value):
+        if self.sensor_id:
+            manager = SensorManager(self.device_id, self.sensor_id)
+            manager.update_sensor_data(value)
+            return True
+        else:
+            return False
+
     def get(self):
-        if self.sensors:
+        if self.sensor_id:
             manager = SensorManager(self.device_id, self.sensor_id)
             sensor_type = manager.get_sensor_type()
             if sensor_type == manager.HUMTEM_TYPE:
