@@ -40,6 +40,7 @@ class DeviceManager(object):
             self.rconn.set("%s:sensors" % self.device_id, pickle.dumps(dict()))
         self.sensors = pickle.loads(
             self.rconn.get("%s:sensors" % self.device_id))
+        logging.info('sensors: %r', self.sensors)
 
     def _persist_sensors(self):
         self.rconn.set("%s:sensors" %
