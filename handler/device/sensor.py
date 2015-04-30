@@ -72,8 +72,8 @@ class SensorHandler(tornado.web.RequestHandler):
         sensor_type = sensor_manager.get_sensor_type()
         data = json.loads(self.request.body)
         value = data['value']
-        sensor_manager.update_sensor_data(value)
         if sensor_type == sensor_manager.HUMTEM_TYPE:
+            sensor_manager.update_sensor_data(value)
             self.write('Update sensor success')
         elif sensor_type == sensor_manager.LED_TYPE:
             value = int(value)
@@ -89,7 +89,19 @@ class SensorHandler(tornado.web.RequestHandler):
             conn = rpyc.connect('127.0.0.1', 8889)
             res = conn.root.handle_msg(json.dumps(command))
             conn.close()
+            self.set_status(200)
+            self.set_header("Content-Type", "application/json")
             if res:
-                self.write('Update sensor success')
+                sensor_manager.update_sensor_data(value)
+                res = {
+                    'errcode': 0,
+                    'errmsg': '',
+                    'msg': 'Update sensor success'
+                }
             else:
-                self.write('客户端未接入互联网或者已断线')
+                res = {
+                    'errcode': -1,
+                    'errmsg': '客户端未接入互联网或者已断线',
+                    'msg': ''
+                }
+            self.write(json.dumps(res))
