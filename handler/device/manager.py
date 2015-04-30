@@ -100,7 +100,7 @@ class SensorManager(object):
         for i in range(recent + 1):
             delta = 60 * i
             start = \
-                (now - datetime.timedelta(minutes=delta + 6)).timetuple()
+                (now - datetime.timedelta(minutes=delta + 8)).timetuple()
             end =\
                 (now - datetime.timedelta(minutes=delta)).timetuple()
             start_timestamp = int(time.mktime(start))
