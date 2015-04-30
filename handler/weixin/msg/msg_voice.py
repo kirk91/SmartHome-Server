@@ -19,6 +19,7 @@ class VoiceMsg(object):
     TEM_COMMAND = "温度"
     HUM_COMMAND = "湿度"
     LED_COMMAND = "电灯"
+    LED_COMMAND_1 = "灯"
     OPEN_COMMAND = "开"
     CLOSE_COMMAND = "关"
 
@@ -40,13 +41,15 @@ class VoiceMsg(object):
         if self.TEM_COMMAND in self.content or \
                 self.HUM_COMMAND in self.content:
             resp_msg, resp_msg_type = self._handle_hum_tem_msg(device_id)
-        elif self.LED_COMMAND in self.content:
+        elif self.LED_COMMAND in self.content or \
+                self.LED_COMMAND_1 in self.content:
             if self.OPEN_COMMAND in self.content:
                 resp_msg, resp_msg_type = self._handle_led_msg(device_id, 1)
             elif self.CLOSE_COMMAND in self.content:
                 resp_msg, resp_msg_type = self._handle_led_msg(device_id, 0)
             else:
-                resp_msg, resp_msg_type = '要关还是开呢', BaseMsg.TEXT_PLAIN
+                # resp_msg, resp_msg_type = '要关还是开呢', BaseMsg.TEXT_PLAIN
+                resp_msg, resp_msg_type = self._handle_tl_msg()
         else:
             resp_msg, resp_msg_type = self._handle_tl_msg()
 
