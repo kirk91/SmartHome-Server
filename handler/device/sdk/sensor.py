@@ -22,7 +22,7 @@ class Sensor(object):
             device_manager.get_all_sensors(self.sensor_type)
         logging.info('sensors: %r', self.sensors)
         if self.sensors:
-            self.sensor_id = self.sensors.keys()[0]
+            self.sensor_id = sorted(self.sensors.keys())[0]  # sensor_id  字典排序最小的那一个
         else:
             self.sensor_id = None
 
