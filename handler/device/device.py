@@ -21,18 +21,24 @@ class DeviceHandler(tornado.web.RequestHandler):
         device_manager = DeviceManager(device_id)
         sensors = device_manager.get_all_sensors(sensor_type)
         logging.info(sensors)
+        sensors = sorted(sensors.items(), key=lambda x: x[0])
+        logging.info(sensors)
 
         humtem_sensors = []
         led_sensors = []
-        for sid, sinfo in sensors.items():
+        tags = ['Home', 'Parlor', 'Bedroom', 'Kitchen']
+        index = 0
+        for sid, sinfo in sensors:
             stype = sinfo['type']
+            tag = tags[index]
+            index += 1
             sensor_manager = SensorManager(device_id, sid)
             if stype == sensor_manager.HUMTEM_TYPE:
                 value = sensor_manager.retrieve_sensor_data()[0]   # 温度，湿度
                 humtem_sensors.append(
                     {
                         "id": sid,
-                        "tag": "Home",
+                        "tag": tag,
                         "value": value
                     }
                 )
@@ -41,7 +47,7 @@ class DeviceHandler(tornado.web.RequestHandler):
                 led_sensors.append(
                     {
                         "id": sid,
-                        "tag": "电灯",
+                        "tag": tag,
                         "value": value
                     }
                 )
