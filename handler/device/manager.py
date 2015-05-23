@@ -143,7 +143,7 @@ class SensorManager(object):
                 if previous_hour < 0:
                     previous_hour += 24
                 values.append(
-                    self.TEM_HUM_DATA.get('{0}'.format(now_hour - i)))
+                    self.TEM_HUM_DATA.get('{0}'.format(previous_hour)))
 
         values.reverse()
         logging.info('sensor values: %r', values)
