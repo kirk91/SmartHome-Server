@@ -139,7 +139,11 @@ class SensorManager(object):
                 values.append(value[-1].split('-')[1])
             else:
                 # values.append(None)
-                values.append(self.TEM_HUM_DATA.get('{0}'.format(now_hour - i)))
+                previous_hour = now_hour - i
+                if previous_hour < 0:
+                    previous_hour += 24
+                values.append(
+                    self.TEM_HUM_DATA.get('{0}'.format(now_hour - i)))
 
         values.reverse()
         logging.info('sensor values: %r', values)
