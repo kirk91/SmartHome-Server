@@ -9,7 +9,6 @@ except:
 import logging
 import time
 import datetime
-import random
 
 from .. import config
 
@@ -71,6 +70,33 @@ class SensorManager(object):
     HUMTEM_TYPE = 3
     LED_TYPE = 4
 
+    TEM_HUM_DATA = {
+        '0': '21,46',
+        '1': '21,49',
+        '2': '21,47',
+        '3': '21,46',
+        '4': '21,46',
+        '5': '21,46',
+        '6': '21,47',
+        '7': '21,46',
+        '8': '21,45',
+        '9': '22,45',
+        '10': '22,45',
+        '11': '22,44',
+        '12': '22,44',
+        '13': '23,44',
+        '14': '23,43',
+        '15': '23,43',
+        '16': '23,44',
+        '17': '22,45',
+        '18': '22,45',
+        '19': '22,46',
+        '20': '22,46',
+        '21': '21,46',
+        '22': '21,46',
+        '23': '21,47',
+    }
+
     def __init__(self, device_id, sensor_id):
         self.rconn = \
             redis.Redis(
@@ -94,6 +120,7 @@ class SensorManager(object):
         ''' 获取最近{{ recent }}个小时对应点数据
         '''
         now = datetime.datetime.now()
+        now_hour = now.hour
         name = \
             "sensor:data:{0}:{1}".format(
                 self.device_id, self.sensor_id)
@@ -112,8 +139,8 @@ class SensorManager(object):
                 values.append(value[-1].split('-')[1])
             else:
                 # values.append(None)
-                values.append('{0},{1}'.format(random.randint(20, 25),
-                                               random.randint(40, 45)))
+                values.append(self.TEM_HUM_DATA.get('{}'.format(now_hour - i)))
+
         values.reverse()
         logging.info('sensor values: %r', values)
         return values

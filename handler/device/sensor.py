@@ -56,8 +56,8 @@ class SensorHandler(tornado.web.RequestHandler):
             for value in values:
                 if value:
                     tem, hum = value.split(',')
-                    tem_values.append(int(tem))
-                    hum_values.append(int(hum))
+                    tem_values.append(int(tem.strip()))
+                    hum_values.append(int(hum.strip()))
                 else:
                     tem_values.append(0)
                     hum_values.append(0)
