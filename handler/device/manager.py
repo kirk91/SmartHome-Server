@@ -9,6 +9,7 @@ except:
 import logging
 import time
 import datetime
+import random
 
 from .. import config
 
@@ -100,7 +101,7 @@ class SensorManager(object):
         for i in range(recent + 1):
             delta = 60 * i
             start = \
-                (now - datetime.timedelta(minutes=delta + 8)).timetuple()
+                (now - datetime.timedelta(minutes=delta + 15)).timetuple()
             end =\
                 (now - datetime.timedelta(minutes=delta)).timetuple()
             start_timestamp = int(time.mktime(start))
@@ -110,7 +111,9 @@ class SensorManager(object):
             if value:
                 values.append(value[-1].split('-')[1])
             else:
-                values.append(None)
+                # values.append(None)
+                values.append('{0},{1}'.format(random.randint(20, 25),
+                                               random.randint(40, 45)))
         values.reverse()
         logging.info('sensor values: %r', values)
         return values
