@@ -35,25 +35,30 @@ class VoiceMsg(object):
 
     def handle(self):
         logging.info('Content: %r', self.content)
-        uid = int(self.redis.hget("wx_user:%s" % self.from_user, 'uid'))
-        if self.redis.hexists("user:%d" % uid, "device_id"):
-            device_id = int(self.redis.hget("user:%d" % uid, "device_id"))
-        else:
-            device_id = None
-        if self.TEM_COMMAND in self.content or \
-                self.HUM_COMMAND in self.content:
-            resp_msg, resp_msg_type = self._handle_hum_tem_msg(device_id)
-        elif self.LED_COMMAND in self.content or \
-                self.LED_COMMAND_1 in self.content:
-            if self.OPEN_COMMAND in self.content:
-                resp_msg, resp_msg_type = self._handle_led_msg(device_id, 1)
-            elif self.CLOSE_COMMAND in self.content:
-                resp_msg, resp_msg_type = self._handle_led_msg(device_id, 0)
+        if self.content:
+            uid = int(self.redis.hget("wx_user:%s" % self.from_user, 'uid'))
+            if self.redis.hexists("user:%d" % uid, "device_id"):
+                device_id = int(self.redis.hget("user:%d" % uid, "device_id"))
             else:
-                # resp_msg, resp_msg_type = '要关还是开呢', BaseMsg.TEXT_PLAIN
+                device_id = None
+            if self.TEM_COMMAND in self.content or \
+                    self.HUM_COMMAND in self.content:
+                resp_msg, resp_msg_type = self._handle_hum_tem_msg(device_id)
+            elif self.LED_COMMAND in self.content or \
+                    self.LED_COMMAND_1 in self.content:
+                if self.OPEN_COMMAND in self.content:
+                    resp_msg, resp_msg_type = \
+                        self._handle_led_msg(device_id, 1)
+                elif self.CLOSE_COMMAND in self.content:
+                    resp_msg, resp_msg_type =\
+                        self._handle_led_msg(device_id, 0)
+                else:
+                    # resp_msg, resp_msg_type = '要关还是开呢', BaseMsg.TEXT_PLAIN
+                    resp_msg, resp_msg_type = self._handle_tl_msg()
+            else:
                 resp_msg, resp_msg_type = self._handle_tl_msg()
         else:
-            resp_msg, resp_msg_type = self._handle_tl_msg()
+            resp_msg, resp_msg_type = '主人，您要干嘛呢?', 'text'
 
         curr_timestamp = int(time.time())
         if resp_msg_type == BaseMsg.TEXT_PLAIN:
